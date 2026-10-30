@@ -1,0 +1,1830 @@
+{
+  "categories": [
+    {
+      "id": "hot",
+      "name": "HOT COFFEE",
+      "products": [
+        "espresso",
+        "double-espresso",
+        "americano",
+        "long-black",
+        "cappuccino",
+        "latte",
+        "vanilla-latte",
+        "caramel-latte",
+        "hazelnut-latte",
+        "mocha",
+        "white-mocha",
+        "caramel-macchiato",
+        "flat-white",
+        "cortado",
+        "macchiato",
+        "affogato",
+        "cinnamon-latte",
+        "honey-latte",
+        "coconut-latte",
+        "cream-latte"
+      ]
+    },
+    {
+      "id": "iced",
+      "name": "ICED COFFEE",
+      "products": [
+        "iced-americano",
+        "iced-latte",
+        "iced-vanilla-latte",
+        "iced-caramel-latte",
+        "iced-hazelnut-latte",
+        "iced-mocha",
+        "iced-white-mocha",
+        "iced-caramel-macchiato",
+        "cold-brew",
+        "vanilla-cold-brew",
+        "caramel-cold-brew",
+        "nitro-cold-brew",
+        "iced-espresso",
+        "iced-flat-white",
+        "dirty-latte"
+      ]
+    },
+    {
+      "id": "non",
+      "name": "NON-COFFEE",
+      "products": [
+        "matcha-latte",
+        "iced-matcha-latte",
+        "chocolate-milk",
+        "iced-chocolate",
+        "hot-chocolate",
+        "strawberry-milk",
+        "strawberry-matcha",
+        "mango-matcha",
+        "chai-latte",
+        "iced-chai-latte"
+      ]
+    },
+    {
+      "id": "bakery",
+      "name": "BAKERY",
+      "products": [
+        "croissant",
+        "chocolate-croissant",
+        "blueberry-muffin",
+        "chocolate-muffin",
+        "cheesecake"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "espresso",
+      "name": "Espresso",
+      "category": "hot",
+      "price": 2.5,
+      "description": "Rich and bold espresso with a smooth finish.",
+      "available": true,
+      "image": "assets/coffee/espresso.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/4736078/pexels-photo-4736078.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "double-espresso",
+      "name": "Double Espresso",
+      "category": "hot",
+      "price": 3.25,
+      "description": "A stronger double shot of smooth espresso.",
+      "available": true,
+      "image": "assets/coffee/double-espresso.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/8736396/pexels-photo-8736396.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "americano",
+      "name": "Americano",
+      "category": "hot",
+      "price": 2.75,
+      "description": "Espresso balanced with hot water.",
+      "available": true,
+      "image": "assets/coffee/americano.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/11234324/pexels-photo-11234324.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "long-black",
+      "name": "Long Black",
+      "category": "hot",
+      "price": 2.75,
+      "description": "Bold espresso poured over hot water.",
+      "available": true,
+      "image": "assets/coffee/long-black.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/29497982/pexels-photo-29497982.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cappuccino",
+      "name": "Cappuccino",
+      "category": "hot",
+      "price": 3.5,
+      "description": "Espresso with steamed milk and creamy foam.",
+      "available": true,
+      "image": "assets/coffee/cappuccino.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/5112652/pexels-photo-5112652.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "latte",
+      "name": "Latte",
+      "category": "hot",
+      "price": 3.5,
+      "description": "Smooth espresso blended with steamed milk.",
+      "available": true,
+      "image": "assets/coffee/latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/5419239/pexels-photo-5419239.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "vanilla-latte",
+      "name": "Vanilla Latte",
+      "category": "hot",
+      "price": 4,
+      "description": "Creamy latte with sweet vanilla flavor.",
+      "available": true,
+      "image": "assets/coffee/vanilla-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/18395616/pexels-photo-18395616.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "caramel-latte",
+      "name": "Caramel Latte",
+      "category": "hot",
+      "price": 4,
+      "description": "Smooth latte with rich caramel flavor.",
+      "available": true,
+      "image": "assets/coffee/caramel-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/11277040/pexels-photo-11277040.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "hazelnut-latte",
+      "name": "Hazelnut Latte",
+      "category": "hot",
+      "price": 4,
+      "description": "Creamy latte with roasted hazelnut notes.",
+      "available": true,
+      "image": "assets/coffee/hazelnut-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/35852545/pexels-photo-35852545.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "mocha",
+      "name": "Mocha",
+      "category": "hot",
+      "price": 4.25,
+      "description": "Espresso, chocolate and steamed milk.",
+      "available": true,
+      "image": "assets/coffee/mocha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/8004561/pexels-photo-8004561.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "white-mocha",
+      "name": "White Mocha",
+      "category": "hot",
+      "price": 4.25,
+      "description": "Creamy espresso with white chocolate.",
+      "available": true,
+      "image": "assets/coffee/white-mocha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/5946979/pexels-photo-5946979.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "caramel-macchiato",
+      "name": "Caramel Macchiato",
+      "category": "hot",
+      "price": 4.5,
+      "description": "Espresso, milk and caramel drizzle.",
+      "available": true,
+      "image": "assets/coffee/caramel-macchiato.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/8004569/pexels-photo-8004569.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "flat-white",
+      "name": "Flat White",
+      "category": "hot",
+      "price": 3.75,
+      "description": "Velvety microfoam over rich espresso.",
+      "available": true,
+      "image": "assets/coffee/flat-white.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/35079943/pexels-photo-35079943.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cortado",
+      "name": "Cortado",
+      "category": "hot",
+      "price": 3.5,
+      "description": "Equal parts espresso and warm milk.",
+      "available": true,
+      "image": "assets/coffee/cortado.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/32599385/pexels-photo-32599385.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "macchiato",
+      "name": "Macchiato",
+      "category": "hot",
+      "price": 3,
+      "description": "Espresso marked with a touch of foam.",
+      "available": true,
+      "image": "assets/coffee/macchiato.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/37745284/pexels-photo-37745284.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "affogato",
+      "name": "Affogato",
+      "category": "hot",
+      "price": 4.5,
+      "description": "Espresso served over creamy vanilla ice cream.",
+      "available": true,
+      "image": "assets/coffee/affogato.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/28729996/pexels-photo-28729996.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cinnamon-latte",
+      "name": "Cinnamon Latte",
+      "category": "hot",
+      "price": 4,
+      "description": "Warm cinnamon blended into a creamy latte.",
+      "available": true,
+      "image": "assets/coffee/cinnamon-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/32599371/pexels-photo-32599371.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "honey-latte",
+      "name": "Honey Latte",
+      "category": "hot",
+      "price": 4,
+      "description": "Naturally sweet honey and smooth espresso.",
+      "available": true,
+      "image": "assets/coffee/honey-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/33493391/pexels-photo-33493391.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "coconut-latte",
+      "name": "Coconut Latte",
+      "category": "hot",
+      "price": 4.25,
+      "description": "Espresso with creamy coconut milk.",
+      "available": true,
+      "image": "assets/coffee/coconut-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/8004564/pexels-photo-8004564.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cream-latte",
+      "name": "Cream Latte",
+      "category": "hot",
+      "price": 4.25,
+      "description": "Silky latte with a creamy finish.",
+      "available": true,
+      "image": "assets/coffee/cream-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/12201275/pexels-photo-12201275.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-americano",
+      "name": "Iced Americano",
+      "category": "iced",
+      "price": 3,
+      "description": "Chilled espresso with cold water and ice.",
+      "available": true,
+      "image": "assets/coffee/iced-americano.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/34046801/pexels-photo-34046801.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-latte",
+      "name": "Iced Latte",
+      "category": "iced",
+      "price": 3.75,
+      "description": "Cold espresso and creamy milk over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/20205946/pexels-photo-20205946.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-vanilla-latte",
+      "name": "Iced Vanilla Latte",
+      "category": "iced",
+      "price": 4.25,
+      "description": "Vanilla latte served chilled over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-vanilla-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/26238864/pexels-photo-26238864.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-caramel-latte",
+      "name": "Iced Caramel Latte",
+      "category": "iced",
+      "price": 4.25,
+      "description": "Caramel latte served cold and refreshing.",
+      "available": true,
+      "image": "assets/coffee/iced-caramel-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/5741238/pexels-photo-5741238.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-hazelnut-latte",
+      "name": "Iced Hazelnut Latte",
+      "category": "iced",
+      "price": 4.25,
+      "description": "Hazelnut latte served chilled.",
+      "available": true,
+      "image": "assets/coffee/iced-hazelnut-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/22221934/pexels-photo-22221934.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-mocha",
+      "name": "Iced Mocha",
+      "category": "iced",
+      "price": 4.5,
+      "description": "Chocolate espresso drink served over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-mocha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/8284685/pexels-photo-8284685.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-white-mocha",
+      "name": "Iced White Mocha",
+      "category": "iced",
+      "price": 4.5,
+      "description": "White chocolate espresso drink over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-white-mocha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/4051583/pexels-photo-4051583.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-caramel-macchiato",
+      "name": "Iced Caramel Macchiato",
+      "category": "iced",
+      "price": 4.75,
+      "description": "Iced espresso with milk and caramel.",
+      "available": true,
+      "image": "assets/coffee/iced-caramel-macchiato.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/7935281/pexels-photo-7935281.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cold-brew",
+      "name": "Cold Brew",
+      "category": "iced",
+      "price": 4,
+      "description": "Slow-steeped coffee with a smooth finish.",
+      "available": true,
+      "image": "assets/coffee/cold-brew.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/28056044/pexels-photo-28056044.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "vanilla-cold-brew",
+      "name": "Vanilla Cold Brew",
+      "category": "iced",
+      "price": 4.5,
+      "description": "Smooth cold brew with vanilla.",
+      "available": true,
+      "image": "assets/coffee/vanilla-cold-brew.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/13054437/pexels-photo-13054437.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "caramel-cold-brew",
+      "name": "Caramel Cold Brew",
+      "category": "iced",
+      "price": 4.5,
+      "description": "Cold brew finished with caramel.",
+      "available": true,
+      "image": "assets/coffee/caramel-cold-brew.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/14941250/pexels-photo-14941250.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "nitro-cold-brew",
+      "name": "Nitro Cold Brew",
+      "category": "iced",
+      "price": 4.75,
+      "description": "Silky cold brew with a creamy texture.",
+      "available": true,
+      "image": "assets/coffee/nitro-cold-brew.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/10225266/pexels-photo-10225266.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-espresso",
+      "name": "Iced Espresso",
+      "category": "iced",
+      "price": 3.25,
+      "description": "Chilled espresso over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-espresso.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/13425585/pexels-photo-13425585.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-flat-white",
+      "name": "Iced Flat White",
+      "category": "iced",
+      "price": 4,
+      "description": "Velvety espresso and milk served cold.",
+      "available": true,
+      "image": "assets/coffee/iced-flat-white.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/20009435/pexels-photo-20009435.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "dirty-latte",
+      "name": "Dirty Latte",
+      "category": "iced",
+      "price": 4.25,
+      "description": "Chilled milk with a bold espresso shot.",
+      "available": true,
+      "image": "assets/coffee/dirty-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/36457298/pexels-photo-36457298.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "matcha-latte",
+      "name": "Matcha Latte",
+      "category": "non",
+      "price": 4,
+      "description": "Creamy green tea latte with a smooth finish.",
+      "available": true,
+      "image": "assets/coffee/matcha-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/3650437/pexels-photo-3650437.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-matcha-latte",
+      "name": "Iced Matcha Latte",
+      "category": "non",
+      "price": 4.25,
+      "description": "Refreshing matcha and milk over ice.",
+      "available": true,
+      "image": "assets/coffee/iced-matcha-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/36522228/pexels-photo-36522228.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "chocolate-milk",
+      "name": "Chocolate Milk",
+      "category": "non",
+      "price": 3.25,
+      "description": "Creamy chocolate milk served chilled.",
+      "available": true,
+      "image": "assets/coffee/chocolate-milk.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/3776531/pexels-photo-3776531.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-chocolate",
+      "name": "Iced Chocolate",
+      "category": "non",
+      "price": 3.75,
+      "description": "Rich chocolate drink served cold.",
+      "available": true,
+      "image": "assets/coffee/iced-chocolate.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/4828331/pexels-photo-4828331.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "hot-chocolate",
+      "name": "Hot Chocolate",
+      "category": "non",
+      "price": 3.75,
+      "description": "Warm and creamy classic hot chocolate.",
+      "available": true,
+      "image": "assets/coffee/hot-chocolate.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/31609729/pexels-photo-31609729.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "strawberry-milk",
+      "name": "Strawberry Milk",
+      "category": "non",
+      "price": 3.75,
+      "description": "Creamy milk with sweet strawberry flavor.",
+      "available": true,
+      "image": "assets/coffee/strawberry-milk.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/19955847/pexels-photo-19955847.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "strawberry-matcha",
+      "name": "Strawberry Matcha",
+      "category": "non",
+      "price": 4.5,
+      "description": "Layered strawberry and creamy matcha.",
+      "available": true,
+      "image": "assets/coffee/strawberry-matcha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/4051560/pexels-photo-4051560.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "mango-matcha",
+      "name": "Mango Matcha",
+      "category": "non",
+      "price": 4.5,
+      "description": "Tropical mango paired with smooth matcha.",
+      "available": true,
+      "image": "assets/coffee/mango-matcha.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/10530447/pexels-photo-10530447.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "chai-latte",
+      "name": "Chai Latte",
+      "category": "non",
+      "price": 4,
+      "description": "Warm spiced chai blended with creamy milk.",
+      "available": true,
+      "image": "assets/coffee/chai-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/15086188/pexels-photo-15086188.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "iced-chai-latte",
+      "name": "Iced Chai Latte",
+      "category": "non",
+      "price": 4.25,
+      "description": "Chilled spiced chai with creamy milk.",
+      "available": true,
+      "image": "assets/coffee/iced-chai-latte.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/15086186/pexels-photo-15086186.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "croissant",
+      "name": "Croissant",
+      "category": "bakery",
+      "price": 2.75,
+      "description": "Buttery, flaky classic French-style pastry.",
+      "available": true,
+      "image": "assets/coffee/croissant.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/37014532/pexels-photo-37014532.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "chocolate-croissant",
+      "name": "Chocolate Croissant",
+      "category": "bakery",
+      "price": 3.25,
+      "description": "Flaky pastry filled with rich chocolate.",
+      "available": true,
+      "image": "assets/coffee/chocolate-croissant.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/36667988/pexels-photo-36667988.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "blueberry-muffin",
+      "name": "Blueberry Muffin",
+      "category": "bakery",
+      "price": 3,
+      "description": "Soft muffin packed with blueberries.",
+      "available": true,
+      "image": "assets/coffee/blueberry-muffin.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/28730007/pexels-photo-28730007.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "chocolate-muffin",
+      "name": "Chocolate Muffin",
+      "category": "bakery",
+      "price": 3,
+      "description": "Moist chocolate muffin with rich cocoa flavor.",
+      "available": true,
+      "image": "assets/coffee/chocolate-muffin.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/35745300/pexels-photo-35745300.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    },
+    {
+      "id": "cheesecake",
+      "name": "Cheesecake",
+      "category": "bakery",
+      "price": 4.5,
+      "description": "Creamy cheesecake with a smooth biscuit base.",
+      "available": true,
+      "image": "assets/coffee/cheesecake.jpg",
+      "sizes": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "temperatures": [
+        "Hot",
+        "Iced"
+      ],
+      "sugar_levels": [
+        "0%",
+        "Low",
+        "Normal",
+        "Extra"
+      ],
+      "milk_options": [
+        "Regular",
+        "Oat",
+        "Almond"
+      ],
+      "toppings": [
+        "Whipped Cream",
+        "Extra Shot",
+        "Caramel"
+      ],
+      "image_url": "https://images.pexels.com/photos/37029476/pexels-photo-37029476.jpeg?auto=compress&cs=tinysrgb&w=1000"
+    }
+  ]
+}
