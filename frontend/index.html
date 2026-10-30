@@ -1,0 +1,4178 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Smart Coffee — Touchless Kiosk</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+    :root {
+      --gesture-bar-height: calc(58px + env(safe-area-inset-bottom, 0px));
+      --detail-bottom-gap: clamp(96px, 12dvh, 112px);
+      --bg: #0d0907;
+      --panel: #140d09;
+      --panel2: #18100b;
+      --panel3: #21170f;
+      --cream: #fffaf4;
+      --muted: rgba(255, 255, 255, .68);
+      --muted2: rgba(255, 255, 255, .44);
+      --coffee: #9b6b36;
+      --caramel: #d6a15d;
+      --gold: #f3c982;
+      --line: rgba(255, 255, 255, .1);
+      --line2: rgba(214, 161, 93, .34);
+      --ok: #78c897;
+      --danger: #e87979;
+      --blue: #7ca9e8;
+      --glass-bg: rgba(255, 255, 255, .055);
+      --glass-hover: rgba(255, 255, 255, .085);
+      --glass-border-hover: rgba(255, 255, 255, .18);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --shadow: 0 12px 40px rgba(0, 0, 0, .25);
+      --shadow-floating: 0 20px 60px rgba(0, 0, 0, .35);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 0, #332116 0, #100b08 42%, #070605 100%);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      color: var(--cream);
+      cursor: none
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      border: 0;
+      cursor: none
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      padding: 0
+    }
+
+    #kiosk {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: linear-gradient(145deg, rgba(25, 19, 15, .97), rgba(9, 8, 7, .98));
+      isolation: isolate
+    }
+
+    #kiosk:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 78% 18%, rgba(214, 160, 96, .12), transparent 28%), radial-gradient(circle at 18% 90%, rgba(140, 87, 53, .1), transparent 32%);
+      pointer-events: none
+    }
+
+    #kiosk:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, .018) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .018) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+      pointer-events: none;
+      z-index: -1
+    }
+
+    .brandmark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #e6b273, #8c5735);
+      color: #1a0f09;
+      box-shadow: 0 10px 30px rgba(214, 160, 96, .2);
+      font-size: 22px
+    }
+
+    .status {
+      height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .035);
+      border-radius: 15px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 12px currentColor
+    }
+
+    .status.wait .dot {
+      background: var(--gold)
+    }
+
+    .status.err .dot {
+      background: var(--danger)
+    }
+
+    .kiosk-status {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 9px
+    }
+
+    .vision-status {
+      border-color: var(--line2);
+      color: var(--gold);
+      letter-spacing: .08em
+    }
+
+    .vision-status .dot {
+      background: var(--ok)
+    }
+
+    .camera-preview {
+      position: absolute;
+      z-index: 80;
+      width: clamp(190px, 21vw, 280px);
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border: 1px solid rgba(243, 201, 130, .55);
+      border-radius: 18px;
+      background: rgba(12, 9, 7, .94);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .48);
+      transition: top .35s ease, right .35s ease, bottom .35s ease, left .35s ease, transform .2s ease;
+    }
+
+    .camera-preview:hover {
+      transform: scale(1.035);
+      border-color: var(--gold);
+    }
+
+    .camera-preview[data-corner="top-left"] {
+      top: 76px;
+      left: 24px;
+    }
+
+    .camera-preview[data-corner="top-right"] {
+      top: 76px;
+      right: 24px;
+    }
+
+    .camera-preview[data-corner="bottom-left"] {
+      bottom: calc(var(--gesture-bar-height) + 14px);
+      left: 24px;
+    }
+
+    .camera-preview[data-corner="bottom-right"] {
+      right: 24px;
+      bottom: calc(var(--gesture-bar-height) + 14px);
+    }
+
+    .camera-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .camera-preview-label {
+      position: absolute;
+      top: 8px;
+      left: 9px;
+      z-index: 1;
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: rgba(12, 9, 7, .76);
+      color: var(--cream);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      pointer-events: none;
+    }
+
+    .camera-preview-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .camera-preview img[data-ready="true"] + .camera-preview-fallback {
+      display: none;
+    }
+
+    .camera-preview img[data-error="true"] {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .camera-preview {
+        width: 150px;
+      }
+
+      .camera-preview[data-corner="top-left"],
+      .camera-preview[data-corner="bottom-left"] {
+        left: 12px;
+      }
+
+      .camera-preview[data-corner="top-right"],
+      .camera-preview[data-corner="bottom-right"] {
+        right: 12px;
+      }
+    }
+
+    .floating-cart {
+      position: absolute;
+      top: 18px;
+      left: 28px;
+      z-index: 100;
+      min-height: 46px;
+      padding: 0 20px;
+      border: 1px solid rgba(228, 181, 124, .45);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f0c88d, #b87943 58%, #8d562f);
+      color: #1a0e08;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, .38);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: transform .2s ease, box-shadow .2s ease;
+      cursor: pointer;
+    }
+
+    .floating-cart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .46)
+    }
+
+    .floating-cart b {
+      color: var(--gold)
+    }
+
+    #content {
+      height: calc(100% - var(--gesture-bar-height));
+      position: relative;
+      overflow: hidden
+    }
+
+    .screen {
+      height: 100%;
+      padding: 34px 48px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: none;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      animation: screenIn .32s ease both
+    }
+
+    .screen:not(.menu-screen) {
+      padding-top: 82px
+    }
+
+    .screen::-webkit-scrollbar {
+      display: none
+    }
+
+    .screen.menu-screen {
+      padding: 86px clamp(24px, 5vw, 76px) 96px
+    }
+
+    .detail-screen {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .detail-screen > .toolbar {
+      flex: 0 0 auto;
+      margin-bottom: 16px;
+    }
+
+    .menu-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 0 26px
+    }
+
+    .menu-brand .brandmark {
+      width: 58px;
+      height: 58px;
+      border-radius: 19px;
+      font-size: 30px
+    }
+
+    .menu-brand h1 {
+      font: 800 clamp(30px, 4vw, 48px)/1.05 'Plus Jakarta Sans';
+      letter-spacing: -.045em;
+      margin: 0
+    }
+
+    .menu-brand p {
+      color: var(--muted);
+      margin: 5px 0 0;
+      letter-spacing: .04em
+    }
+
+    .menu-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px
+    }
+
+    .search-wrap {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 560px;
+      padding: 0 17px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted)
+    }
+
+    .search-wrap input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--cream);
+      font: inherit;
+      cursor: text
+    }
+
+    .search-wrap input::placeholder {
+      color: var(--muted2)
+    }
+
+    .category-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 2px 2px 12px;
+      scrollbar-width: none
+    }
+
+    .category-strip::-webkit-scrollbar {
+      display: none
+    }
+
+    .category-pill {
+      min-height: 44px;
+      flex: 0 0 auto;
+      padding: 0 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .035);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: .18s
+    }
+
+    .category-pill:hover,
+    .category-pill.active {
+      color: #1a0e08;
+      border-color: transparent;
+      background: linear-gradient(135deg, #e5b16f, #b87943)
+    }
+
+    .menu-section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      margin: 15px 0 17px
+    }
+
+    .menu-section-heading h2 {
+      margin: 0
+    }
+
+    .menu-result-count {
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .floating-cart b {
+      color: #1a0e08;
+      min-width: 22px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .5)
+    }
+
+    @keyframes screenIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .footer {
+      height: var(--gesture-bar-height);
+      min-height: 58px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      flex: 0 0 var(--gesture-bar-height);
+      border-top: 1px solid var(--line);
+      background: rgba(8, 7, 6, .65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .03em;
+      position: relative;
+      z-index: 4
+    }
+
+    .footer strong {
+      color: var(--gold);
+      margin-right: 8px
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-transform: uppercase
+    }
+
+    .eyebrow i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 14px var(--gold)
+    }
+
+    h2 {
+      font: 800 clamp(28px, 3vw, 46px) 'Plus Jakarta Sans';
+      margin: 9px 0 8px;
+      letter-spacing: -.04em
+    }
+
+    h3 {
+      font: 700 20px 'Plus Jakarta Sans';
+      margin: 0
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .btn {
+      min-height: 58px;
+      padding: 0 24px;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #e5b16f, #b87943);
+      color: #1a0e08;
+      font-weight: 800;
+      box-shadow: 0 14px 32px rgba(214, 160, 96, .16);
+      transition: .18s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent, rgba(255, 255, 255, .22), transparent);
+      transform: translateX(-120%);
+      transition: .45s
+    }
+
+    .btn:hover:before {
+      transform: translateX(120%)
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, .045);
+      border: 1px solid var(--line);
+      color: var(--cream);
+      box-shadow: none
+    }
+
+    .btn.dark {
+      background: #241a14;
+      color: var(--cream);
+      border: 1px solid var(--line2)
+    }
+
+    .btn.danger {
+      background: rgba(231, 123, 112, .09);
+      border: 1px solid rgba(231, 123, 112, .25);
+      color: #ff9c91
+    }
+
+    .btn.hold {
+      background: linear-gradient(135deg, #3b2518, #1d130e);
+      border: 1px solid var(--line2);
+      color: var(--cream);
+      overflow: hidden
+    }
+
+    .btn.hold .progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, rgba(214, 160, 96, .18), rgba(214, 160, 96, .42));
+      transition: width .08s
+    }
+
+    .btn.hold span {
+      position: relative
+    }
+
+    .btn:disabled {
+      opacity: .4
+    }
+
+    .hero {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 50px;
+      align-items: center
+    }
+
+    .hero-copy {
+      padding-left: 20px
+    }
+
+    .hero-title {
+      font: 800 clamp(48px, 6vw, 84px)/.94 'Plus Jakarta Sans';
+      letter-spacing: -.07em;
+      margin: 16px 0 22px
+    }
+
+    .hero-title span {
+      color: var(--gold)
+    }
+
+    .hero-copy .lead {
+      max-width: 560px;
+      font-size: 17px
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px
+    }
+
+    .micro {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      margin-top: 25px;
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .micro span {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .micro b {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold)
+    }
+
+    .hero-art {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      position: relative
+    }
+
+    .halo {
+      position: absolute;
+      width: 430px;
+      height: 430px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(214, 160, 96, .18), rgba(214, 160, 96, .04) 48%, transparent 70%);
+      filter: blur(2px)
+    }
+
+    .coffee-orb {
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle at 32% 24%, #f3d4a5 0 7%, #c88850 8% 17%, #6c3d23 35%, #2a170e 68%, #0c0806 100%);
+      box-shadow: inset -30px -35px 55px rgba(0, 0, 0, .55), inset 25px 25px 45px rgba(255, 220, 170, .2), 0 40px 80px rgba(0, 0, 0, .55)
+    }
+
+    .coffee-orb:before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 68px;
+      left: 85px;
+      top: 128px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, #dcb17c 0 13%, #8a5533 16% 40%, #3b2113 42% 100%);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .45)
+    }
+
+    .steam {
+      position: absolute;
+      top: 62px;
+      left: 142px;
+      width: 80px;
+      height: 75px
+    }
+
+    .steam:before,
+    .steam:after {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 58px;
+      border-radius: 100%;
+      background: linear-gradient(transparent, rgba(255, 255, 255, .65), transparent);
+      transform: rotate(8deg);
+      animation: steam 2.4s infinite
+    }
+
+    .steam:after {
+      left: 30px;
+      animation-delay: .8s
+    }
+
+    @keyframes steam {
+
+      0%,
+      100% {
+        transform: translateY(8px) rotate(8deg);
+        opacity: 0
+      }
+
+      35% {
+        opacity: .8
+      }
+
+      70% {
+        transform: translateY(-8px) rotate(-8deg);
+        opacity: 0
+      }
+    }
+
+    .float-card {
+      position: absolute;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: rgba(18, 15, 12, .72);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+      font-size: 11px;
+      color: var(--muted);
+      animation: float 4s ease-in-out infinite
+    }
+
+    .float-card strong {
+      display: block;
+      color: var(--cream);
+      font-size: 12px;
+      margin-bottom: 4px
+    }
+
+    .fc1 {
+      top: 12%;
+      right: 3%
+    }
+
+    .fc2 {
+      bottom: 18%;
+      left: 4%;
+      animation-delay: 1.2s
+    }
+
+    .fc3 {
+      bottom: 8%;
+      right: 10%;
+      animation-delay: 2s
+    }
+
+    @keyframes float {
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 22px
+    }
+
+    .back {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .back:hover {
+      color: var(--cream);
+      border-color: var(--line2)
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 28px
+    }
+
+    .category {
+      min-height: 300px;
+      border: 1px solid var(--line);
+      background: linear-gradient(150deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .018));
+      border-radius: 25px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      transition: .2s
+    }
+
+    .category:after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -40px;
+      bottom: -50px;
+      border-radius: 50%;
+      background: rgba(214, 160, 96, .1);
+      filter: blur(15px)
+    }
+
+    .category:hover,
+    .category.active {
+      transform: translateY(-5px);
+      border-color: var(--line2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .28)
+    }
+
+    .category .icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      font-size: 35px;
+      background: linear-gradient(145deg, rgba(214, 160, 96, .2), rgba(214, 160, 96, .04));
+      border: 1px solid var(--line2);
+      margin-bottom: 60px
+    }
+
+    .category p {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .arrow {
+      position: absolute;
+      right: 22px;
+      bottom: 22px;
+      color: var(--gold);
+      font-size: 20px
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 17px
+    }
+
+    .product {
+      height: 360px;
+      border: 1px solid var(--line);
+      border-radius: 25px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .018));
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      transition: .2s
+    }
+
+    .product:hover,
+    .product.active {
+      transform: translateY(-5px);
+      border-color: var(--line2);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, .3)
+    }
+
+    .product.off {
+      opacity: .48;
+      filter: saturate(.4)
+    }
+
+    .product-visual {
+      height: 200px;
+      border-radius: 19px;
+      background: radial-gradient(circle at 50% 32%, rgba(242, 209, 165, .22), transparent 42%), linear-gradient(145deg, #2b1a11, #110b08);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .cup {
+      width: 116px;
+      height: 92px;
+      border-radius: 0 0 46px 46px;
+      background: linear-gradient(145deg, #f0dfcc, #a87a58);
+      position: relative;
+      box-shadow: 0 24px 35px rgba(0, 0, 0, .4)
+    }
+
+    .cup:before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      top: -14px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 55%, #c27d46 0 32%, #4b2818 34% 67%, #e0c2a0 69% 100%)
+    }
+
+    .cup:after {
+      content: "";
+      position: absolute;
+      right: -29px;
+      top: 17px;
+      width: 38px;
+      height: 45px;
+      border: 9px solid #b88a69;
+      border-left: 0;
+      border-radius: 0 22px 22px 0
+    }
+
+    .product-visual .tag {
+      position: absolute;
+      top: 12px;
+      left: 12px
+    }
+
+    .tag {
+      padding: 6px 9px;
+      border-radius: 9px;
+      background: rgba(8, 7, 6, .68);
+      border: 1px solid var(--line);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      color: var(--gold)
+    }
+
+    .product-info {
+      padding: 16px 4px
+    }
+
+    .product-name {
+      font: 700 18px 'Plus Jakarta Sans'
+    }
+
+    .product-desc {
+      height: 36px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 5px
+    }
+
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px
+    }
+
+    .price {
+      font-weight: 800;
+      color: var(--cream);
+      font-size: 18px
+    }
+
+    .avail {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--ok);
+      letter-spacing: .1em
+    }
+
+    .avail.off {
+      color: var(--danger)
+    }
+
+    .detail-layout {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: .85fr 1.15fr;
+      gap: 35px;
+    }
+
+    .detail-art {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: radial-gradient(circle at 50% 30%, rgba(214, 160, 96, .16), transparent 45%), linear-gradient(150deg, #1a120d, #0b0806);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .detail-art .cup {
+      transform: scale(1.55)
+    }
+
+    .detail-copy {
+      min-height: 0;
+      height: auto;
+      max-height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: thin;
+      scrollbar-color: var(--coffee) rgba(255, 255, 255, .05);
+      padding: 4px 14px calc(var(--detail-bottom-gap) + env(safe-area-inset-bottom, 0px)) 10px;
+      scroll-padding-block-end: calc(var(--detail-bottom-gap) + env(safe-area-inset-bottom, 0px));
+    }
+
+    .detail-copy::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .detail-copy::-webkit-scrollbar-track {
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .detail-copy::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: rgba(214, 160, 96, .58);
+      background-clip: padding-box;
+    }
+
+    .detail-copy::-webkit-scrollbar-thumb:hover {
+      background: rgba(240, 196, 124, .8);
+      background-clip: padding-box;
+    }
+
+    .option-section {
+      margin: 18px 0
+    }
+
+    .option-title {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-bottom: 9px
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .option {
+      padding: 11px 15px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .035);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      transition: .15s
+    }
+
+    .option.active,
+    .option:hover {
+      background: rgba(214, 160, 96, .12);
+      border-color: var(--line2);
+      color: var(--cream)
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 13px
+    }
+
+    .qbtn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--line);
+      font-size: 20px
+    }
+
+    .qnum {
+      font-weight: 800;
+      min-width: 30px;
+      text-align: center
+    }
+
+    .detail-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 20px;
+      padding: 18px 0 8px;
+      border-top: 1px solid var(--line)
+    }
+
+    .detail-footer > div:last-child {
+      flex: 1 1 180px;
+    }
+
+    .detail-footer .add-to-cart {
+      width: 100%;
+      min-height: 58px;
+    }
+
+    .cart-layout {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 22px
+    }
+
+    .cart-list {
+      overflow: auto;
+      padding-right: 5px
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 72px 1fr auto auto;
+      gap: 16px;
+      align-items: center;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .03);
+      margin-bottom: 10px
+    }
+
+    .mini-cup {
+      width: 70px;
+      height: 70px;
+      border-radius: 17px;
+      background: linear-gradient(145deg, #2b1a11, #110b08);
+      display: grid;
+      place-items: center
+    }
+
+    .mini-cup .cup {
+      transform: scale(.48)
+    }
+
+    .cart-name {
+      font-weight: 800
+    }
+
+    .cart-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px
+    }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02));
+      height: max-content
+    }
+
+    .sumrow {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 10px 0
+    }
+
+    .sumtotal {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      font-size: 20px;
+      font-weight: 800
+    }
+
+    .summary .btn {
+      width: 100%;
+      margin-top: 12px
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr .75fr;
+      gap: 22px;
+      height: 100%
+    }
+
+    .review-card,
+    .ticket {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, .035);
+      padding: 22px
+    }
+
+    .review-items {
+      max-height: 410px;
+      overflow: auto
+    }
+
+    .review-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .confirm-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 1px solid var(--line2);
+      border-radius: 26px;
+      background: radial-gradient(circle at 50% 30%, rgba(214, 160, 96, .12), transparent 50%), rgba(255, 255, 255, .025);
+      padding: 28px
+    }
+
+    .hold-ring {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line2);
+      background: rgba(214, 160, 96, .06);
+      margin-bottom: 20px;
+      position: relative
+    }
+
+    .hold-ring:before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px dashed rgba(214, 160, 96, .3);
+      border-radius: 50%;
+      animation: spin 8s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .success {
+      height: 100%;
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 30px;
+      align-items: center
+    }
+
+    .success-mark {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin: auto;
+      background: radial-gradient(circle, rgba(99, 197, 138, .28), rgba(99, 197, 138, .04));
+      border: 1px solid rgba(99, 197, 138, .35);
+      box-shadow: 0 0 70px rgba(99, 197, 138, .1);
+      font-size: 75px;
+      color: var(--ok)
+    }
+
+    .order-id {
+      font: 800 54px 'Plus Jakarta Sans';
+      color: var(--gold);
+      letter-spacing: -.05em
+    }
+
+    .ticket {
+      max-width: 480px;
+      background: #f7efe5;
+      color: #20150f;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .35)
+    }
+
+    .ticket .muted {
+      color: #75685f
+    }
+
+    .ticket hr {
+      border: 0;
+      border-top: 1px dashed #bcae9f;
+      margin: 15px 0
+    }
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin: 9px 0
+    }
+
+    .ticket-total {
+      font-size: 20px;
+      font-weight: 800
+    }
+
+    .error-wrap,
+    .empty {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center
+    }
+
+    .error-card {
+      width: min(580px, 90%);
+      padding: 42px;
+      border: 1px solid rgba(231, 123, 112, .25);
+      border-radius: 30px;
+      background: rgba(231, 123, 112, .045)
+    }
+
+    .error-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: rgba(231, 123, 112, .1);
+      color: #ff9c91;
+      font-size: 36px
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      opacity: .7
+    }
+
+    #cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 52px;
+      height: 52px;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    #cursor,
+    #cursor * {
+      pointer-events: none !important;
+    }
+
+    #cursor.inactive {
+      opacity: 0;
+    }
+
+    .cursor-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      background: rgba(214, 160, 96, .08);
+      box-shadow: 0 0 28px rgba(214, 160, 96, .3);
+      transition: .15s
+    }
+
+    .cursor-dot {
+      position: absolute;
+      left: 21px;
+      top: 21px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cream);
+      box-shadow: 0 0 12px rgba(255, 255, 255, .7)
+    }
+
+    #cursor.hover .cursor-ring {
+      transform: scale(1.22);
+      background: rgba(214, 160, 96, .15);
+      box-shadow: 0 0 36px rgba(214, 160, 96, .48)
+    }
+
+    #cursor.scrolling .cursor-ring {
+      transform: scale(.82) rotate(45deg);
+      border-color: #7ca9e8;
+      background: rgba(124, 169, 232, .14);
+      box-shadow: 0 0 36px rgba(124, 169, 232, .34)
+    }
+
+    #cursor.scrolling .cursor-dot {
+      background: #cfe3ff
+    }
+
+    #cursor.scrolling .cursor-label {
+      opacity: 1;
+      border-color: rgba(124, 169, 232, .4);
+      color: #cfe3ff;
+    }
+
+    #cursor.pinch .cursor-ring {
+      transform: scale(.72);
+      background: rgba(214, 160, 96, .3)
+    }
+
+    #cursor .cursor-label {
+      position: absolute;
+      top: 61px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: #15100c;
+      color: var(--gold);
+      border: 1px solid var(--line2);
+      border-radius: 9px;
+      padding: 5px 8px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      opacity: 0;
+      transition: .15s
+    }
+
+    #cursor.hover .cursor-label {
+      opacity: 1
+    }
+
+    #cursor.dragging .cursor-ring {
+      border-color: var(--gold);
+      background: rgba(243, 201, 130, .18);
+      box-shadow: 0 0 28px rgba(214, 161, 93, .42);
+    }
+
+    #cursor.dragging .cursor-dot {
+      background: var(--gold);
+    }
+
+    .drag-preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9998;
+      display: none;
+      width: min(190px, 42vw);
+      min-height: 86px;
+      padding: 9px;
+      border: 1px solid rgba(214, 161, 93, .5);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .08);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+      pointer-events: none;
+      will-change: transform, opacity;
+      transition: none;
+    }
+
+    .drag-preview.visible {
+      display: block;
+      animation: productLift .2s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    @keyframes productLift {
+      from { opacity: .55; scale: .92; }
+      to { opacity: 1; scale: 1; }
+    }
+
+    .drag-preview-card {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+    }
+
+    .drag-preview-photo {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #21170f;
+    }
+
+    .drag-preview-name {
+      overflow: hidden;
+      color: var(--cream);
+      font-size: 12px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .drag-preview-category {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .drag-preview-price {
+      margin-top: 4px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .drag-preview-state {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gold);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .floating-cart {
+      position: absolute;
+      overflow: visible;
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+    .floating-cart .drop-hint {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 7px);
+      padding: 6px 10px;
+      border: 1px solid rgba(243, 201, 130, .36);
+      border-radius: 999px;
+      background: rgba(24, 17, 12, .9);
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      white-space: nowrap;
+      transform: translateX(-50%);
+    }
+
+    .floating-cart.drop-target {
+      transform: scale(1.06);
+      filter: brightness(1.08);
+      box-shadow: 0 0 35px rgba(214, 161, 93, .24), var(--shadow-floating);
+    }
+
+    .floating-cart.drop-target .drop-hint {
+      display: block;
+    }
+
+    .floating-cart.drag-active {
+      right: 24px;
+      bottom: calc(var(--gesture-bar-height) + 22px);
+      width: min(300px, calc(100vw - 40px));
+      min-height: 172px;
+      padding: 20px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 9px;
+      border: 1px dashed rgba(243, 201, 130, .62);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0, rgba(214, 161, 93, .18), transparent 65%),
+        rgba(31, 22, 16, .94);
+      color: var(--cream);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .5), inset 0 1px rgba(255, 255, 255, .12);
+      transform: none;
+      filter: none;
+      animation: cartDropAppear .22s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .floating-cart.drag-active > span[aria-hidden="true"] {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .floating-cart.drag-active > span:nth-of-type(3) {
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: .16em;
+    }
+
+    .floating-cart.drag-active b {
+      position: absolute;
+      top: 14px;
+      right: 15px;
+      color: #21140b;
+    }
+
+    .floating-cart.drag-active .drop-hint {
+      position: static;
+      display: block;
+      order: 3;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .09em;
+      transform: none;
+    }
+
+    .floating-cart.drag-active.drop-target {
+      border-style: solid;
+      border-color: rgba(243, 201, 130, .95);
+      background:
+        radial-gradient(circle at 50% 0, rgba(214, 161, 93, .28), transparent 68%),
+        rgba(48, 32, 19, .97);
+      box-shadow: 0 0 0 5px rgba(214, 161, 93, .1), 0 28px 80px rgba(0, 0, 0, .56);
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .floating-cart.drag-active.drop-target .drop-hint {
+      color: var(--gold);
+    }
+
+    @keyframes cartDropAppear {
+      from { opacity: .5; transform: translateY(12px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .floating-cart.cart-bump,
+    .floating-cart.cart-success {
+      animation: cartBump .42s ease;
+    }
+
+    .floating-cart.cart-bump b {
+      animation: badgeBump .42s ease;
+    }
+
+    @keyframes cartBump {
+      45% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes badgeBump {
+      45% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    #hold-svg {
+      position: absolute;
+      inset: -8px;
+      width: 68px;
+      height: 68px;
+      transform: rotate(-90deg);
+      opacity: 0
+    }
+
+    #cursor.holding #hold-svg {
+      opacity: 1
+    }
+
+    #cursor.dwell-complete .cursor-dot {
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(243, 201, 130, .9);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      top: 26px;
+      transform: translate(-50%, -20px);
+      opacity: 0;
+      z-index: 10000;
+      padding: 11px 17px;
+      border: 1px solid var(--line2);
+      border-radius: 15px;
+      background: rgba(18, 14, 11, .92);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .35);
+      font-size: 12px;
+      font-weight: 800;
+      transition: .22s
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0)
+    }
+
+    .toast small {
+      display: block;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px
+    }
+
+    #dev {
+      position: fixed;
+      left: 12px;
+      bottom: 10px;
+      z-index: 10001;
+      display: none;
+      gap: 5px;
+      flex-wrap: wrap;
+      max-width: 700px
+    }
+
+    #dev button {
+      font-size: 10px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      background: #251b15;
+      color: #e7c9a8;
+      border: 1px solid #3b2b21
+    }
+
+    #gestureDebug {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      z-index: 10002;
+      max-width: min(760px, calc(100vw - 24px));
+      padding: 9px 12px;
+      border: 1px solid rgba(214, 161, 93, .4);
+      border-radius: 12px;
+      background: rgba(15, 11, 8, .92);
+      color: var(--cream);
+      font: 10px/1.5 ui-monospace, Consolas, monospace;
+      pointer-events: none;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .68);
+      backdrop-filter: blur(10px);
+      z-index: 80;
+      display: grid;
+      place-items: center
+    }
+
+    .modal {
+      width: min(520px, 90%);
+      padding: 30px;
+      border-radius: 28px;
+      background: #17120f;
+      border: 1px solid var(--line2);
+      box-shadow: 0 30px 100px rgba(0, 0, 0, .6);
+      text-align: center
+    }
+
+    .modal h3 {
+      font-size: 25px
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 22px
+    }
+
+    .category-grid[style*="margin-top:12px"] {
+      margin-top: 0 !important;
+      gap: 10px !important
+    }
+
+    .category-grid[style*="margin-top:12px"] .category {
+      min-height: 120px !important;
+      padding: 12px !important
+    }
+
+    .category-grid[style*="margin-top:12px"]+div {
+      margin-top: 8px !important
+    }
+
+    @media(max-height:780px) {
+      .screen {
+        padding-top: 18px;
+        padding-bottom: 12px
+      }
+
+      .detail-screen:not(.menu-screen) {
+        padding-top: 68px;
+        padding-bottom: 12px;
+      }
+
+      .toolbar {
+        margin-bottom: 12px
+      }
+
+      .detail-screen > .toolbar {
+        margin-bottom: 8px;
+      }
+
+      .review-grid {
+        height: auto;
+        min-height: 0
+      }
+
+      .confirm-panel {
+        padding: 16px
+      }
+
+      .hold-ring {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 10px
+      }
+    }
+
+    @media(max-width:1050px) {
+      .hero {
+        grid-template-columns: 1fr
+      }
+
+      .hero-art {
+        display: none
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .cart-layout,
+      .review-grid,
+      .success {
+        grid-template-columns: 1fr
+      }
+
+      .screen {
+        padding: 24px
+      }
+
+      .detail-layout {
+        grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+        gap: 18px;
+      }
+
+      .hero-copy {
+        padding-left: 0
+      }
+    }
+
+    @media(max-width:700px) {
+      .kiosk-status {
+        top: 10px;
+        right: 10px;
+        gap: 5px
+      }
+
+      .kiosk-status .status {
+        height: 36px;
+        padding: 0 9px;
+        font-size: 9px
+      }
+
+      .floating-cart {
+        top: 10px;
+        left: 10px;
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 10px
+      }
+
+      .screen.menu-screen {
+        padding: 68px 18px 92px
+      }
+
+      .detail-screen:not(.menu-screen) {
+        padding: 68px 14px 12px;
+      }
+
+      .detail-screen > .toolbar {
+        margin-bottom: 8px;
+      }
+
+      .detail-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .detail-art {
+        flex: 0 0 118px;
+      }
+
+      .detail-photo {
+        min-height: 0;
+      }
+
+      .detail-copy {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding-right: 8px;
+      }
+
+      .detail-footer > div:last-child {
+        flex-basis: 100%;
+      }
+
+      .menu-tools {
+        align-items: stretch;
+        flex-direction: column
+      }
+
+      .search-wrap {
+        max-width: none
+      }
+    }
+  
+    /* Real product photography */
+    .product-visual { overflow:hidden; position:relative; background:#17120f; }
+    .product-photo { width:100%; height:100%; display:block; object-fit:cover; aspect-ratio:1/1; transition:transform .45s ease, filter .3s ease; }
+    .product:hover .product-photo { transform:scale(1.045); filter:saturate(1.06); }
+    .product-visual .tag { z-index:2; }
+    .detail-art { overflow:hidden; position:relative; }
+    .detail-photo { width:100%; height:100%; min-height:420px; display:block; object-fit:cover; border-radius:24px; }
+    .mini-cup { overflow:hidden; width:86px; height:86px; border-radius:16px; flex:0 0 86px; background:#17120f; }
+    .mini-photo { width:100%; height:100%; object-fit:cover; display:block; }
+    .image-error { object-fit:contain; padding:28px; opacity:.45; background:linear-gradient(135deg,#211a15,#120e0b); }
+    @media (max-width:700px) { .detail-photo { min-height:280px; } }
+
+    #kiosk {
+      background:
+        radial-gradient(ellipse at 76% 10%, rgba(155, 107, 54, .11), transparent 38%),
+        radial-gradient(ellipse at 8% 92%, rgba(92, 52, 30, .16), transparent 42%),
+        linear-gradient(145deg, #17100c, #0b0806 64%);
+    }
+
+    #kiosk:before {
+      background:
+        radial-gradient(circle at 78% 18%, rgba(214, 161, 93, .08), transparent 30%),
+        radial-gradient(circle at 18% 90%, rgba(140, 87, 53, .07), transparent 34%);
+    }
+
+    .kiosk-status .status,
+    .search-wrap,
+    .category-pill,
+    .product,
+    .category,
+    .detail-art,
+    .detail-copy,
+    .cart-item,
+    .summary,
+    .review-card,
+    .confirm-panel,
+    .modal,
+    .toast,
+    .back,
+    .option,
+    .qbtn {
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+
+    .status {
+      border-color: rgba(255, 255, 255, .09);
+      background: rgba(255, 255, 255, .045);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+    }
+
+    .vision-status {
+      background: linear-gradient(135deg, rgba(214, 161, 93, .11), rgba(255, 255, 255, .035));
+      border-color: rgba(214, 161, 93, .3);
+    }
+
+    .floating-cart {
+      top: auto;
+      right: 26px;
+      bottom: calc(var(--gesture-bar-height) + 16px);
+      left: auto;
+      min-height: 54px;
+      padding-inline: 18px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(243, 201, 130, .96), rgba(214, 161, 93, .94));
+      box-shadow: var(--shadow-floating);
+      letter-spacing: .06em;
+    }
+
+    .floating-cart b {
+      color: #21140b;
+      background: rgba(255, 255, 255, .55);
+    }
+
+    .screen.menu-screen {
+      padding-bottom: 112px;
+    }
+
+    .menu-brand {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .menu-brand:after {
+      content: "";
+      width: 42px;
+      height: 2px;
+      position: absolute;
+      left: 74px;
+      bottom: -14px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--caramel), transparent);
+    }
+
+    .menu-brand .brandmark {
+      border: 1px solid rgba(255, 255, 255, .22);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .28), inset 0 1px rgba(255, 255, 255, .28);
+    }
+
+    .menu-brand h1 {
+      color: #fffaf4;
+      letter-spacing: -.055em;
+    }
+
+    .menu-brand p {
+      color: var(--muted);
+    }
+
+    .search-wrap {
+      min-height: 56px;
+      border-color: rgba(255, 255, 255, .12);
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .035));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 12px 32px rgba(0, 0, 0, .16);
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .search-wrap:focus-within {
+      border-color: rgba(243, 201, 130, .55);
+      background: rgba(255, 255, 255, .075);
+      box-shadow: 0 0 0 3px rgba(214, 161, 93, .1), 0 14px 34px rgba(0, 0, 0, .2);
+    }
+
+    .category-pill {
+      border-color: rgba(255, 255, 255, .1);
+      border-radius: 999px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .035);
+    }
+
+    .category-pill:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, .18);
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .category-pill:hover:not(.active) {
+      color: var(--cream);
+    }
+
+    .category-pill.active {
+      color: #24170d;
+      background: linear-gradient(135deg, #f3c982, #d6a15d);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .4), 0 8px 24px rgba(214, 161, 93, .17);
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 228px), 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      height: 352px;
+      padding: 12px;
+      border-color: rgba(255, 255, 255, .09);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 50% 0, rgba(214, 161, 93, .075), transparent 52%),
+        linear-gradient(145deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .025));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .045), var(--shadow);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+    }
+
+    .product:hover,
+    .product.active {
+      transform: translateY(-4px);
+      border-color: rgba(214, 161, 93, .38);
+      background:
+        radial-gradient(circle at 50% 0, rgba(214, 161, 93, .11), transparent 52%),
+        linear-gradient(145deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .035));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .07), 0 18px 44px rgba(0, 0, 0, .32);
+    }
+
+    .product-visual {
+      height: 196px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 19px;
+      background: #1a120d;
+    }
+
+    .product-photo {
+      transition: transform .35s ease, filter .35s ease;
+    }
+
+    .product:hover .product-photo {
+      transform: scale(1.03);
+      filter: saturate(1.05);
+    }
+
+    .product.pinch-ready {
+      border-color: rgba(243, 201, 130, .62);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .07), 0 16px 42px rgba(214, 161, 93, .18);
+    }
+
+    .product.pinch-ready::after {
+      content: "✦ PINCH TO GRAB";
+      position: absolute;
+      left: 50%;
+      bottom: 17px;
+      z-index: 3;
+      padding: 7px 11px;
+      border: 1px solid rgba(243, 201, 130, .34);
+      border-radius: 999px;
+      background: rgba(20, 13, 9, .86);
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .product.dragging-source {
+      transform: scale(.985);
+      opacity: .48;
+      border-color: rgba(243, 201, 130, .72);
+      box-shadow: 0 0 30px rgba(214, 161, 93, .24);
+    }
+
+    .detail-art.dragging-source {
+      opacity: .48;
+      border-color: rgba(243, 201, 130, .72);
+      box-shadow: 0 0 30px rgba(214, 161, 93, .24);
+    }
+
+    .detail-art.pinch-ready {
+      border-color: rgba(243, 201, 130, .58);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .08), 0 0 32px rgba(214, 161, 93, .2);
+    }
+
+    .detail-art.pinch-ready::after {
+      content: "✦ PINCH TO GRAB";
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      z-index: 3;
+      padding: 7px 11px;
+      border: 1px solid rgba(243, 201, 130, .34);
+      border-radius: 999px;
+      background: rgba(20, 13, 9, .86);
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .product-info {
+      padding: 14px 4px 5px;
+    }
+
+    .product-name {
+      color: #fffaf4;
+      font-size: 17px;
+      letter-spacing: -.02em;
+    }
+
+    .product-desc {
+      color: rgba(255, 255, 255, .56);
+    }
+
+    .price {
+      color: var(--gold);
+    }
+
+    .tag {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(13, 9, 7, .72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .detail-screen {
+      background: radial-gradient(ellipse at 74% 20%, rgba(214, 161, 93, .035), transparent 50%);
+    }
+
+    .detail-art,
+    .detail-copy {
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: var(--radius-xl);
+      background-color: rgba(255, 255, 255, .035);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .05), var(--shadow);
+    }
+
+    .detail-art {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(214, 161, 93, .14), transparent 48%),
+        linear-gradient(145deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
+    }
+
+    .detail-copy {
+      background:
+        radial-gradient(ellipse at 85% 0, rgba(214, 161, 93, .05), transparent 46%),
+        linear-gradient(145deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .018));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .055), var(--shadow);
+    }
+
+    .option {
+      border-color: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, .045);
+    }
+
+    .option.active,
+    .option:hover {
+      border-color: rgba(214, 161, 93, .45);
+      background: rgba(214, 161, 93, .13);
+      color: #fffaf4;
+    }
+
+    .qbtn,
+    .back {
+      border-color: rgba(255, 255, 255, .11);
+      background: rgba(255, 255, 255, .055);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .qbtn:hover,
+    .back:hover {
+      transform: translateY(-1px);
+      border-color: rgba(214, 161, 93, .4);
+      background: rgba(255, 255, 255, .09);
+    }
+
+    .detail-footer {
+      border-color: rgba(255, 255, 255, .12);
+    }
+
+    .cart-item,
+    .summary,
+    .review-card,
+    .confirm-panel {
+      border-color: rgba(255, 255, 255, .1);
+      background: linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .025));
+      box-shadow: inset 0 1px rgba(255, 255, 255, .045), var(--shadow);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f3c982, #d6a15d);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .32), 0 12px 30px rgba(214, 161, 93, .15);
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    }
+
+    .btn:hover {
+      filter: brightness(1.06);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .4), 0 15px 32px rgba(214, 161, 93, .2);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn.secondary {
+      background: linear-gradient(145deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .035));
+      border-color: rgba(255, 255, 255, .12);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+    }
+
+    :where(button, input, [tabindex="0"]):focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .footer {
+      position: relative;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 0 24px env(safe-area-inset-bottom, 0px);
+      border-top-color: rgba(255, 255, 255, .08);
+      background: rgba(16, 11, 8, .84);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      font-size: 11px;
+    }
+
+    .footer strong {
+      padding: 7px 10px;
+      border: 1px solid rgba(214, 161, 93, .2);
+      border-radius: 999px;
+      background: rgba(214, 161, 93, .08);
+      white-space: nowrap;
+    }
+
+    .modal-backdrop {
+      background: rgba(8, 5, 3, .72);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    .modal {
+      border-color: rgba(255, 255, 255, .13);
+      background: linear-gradient(145deg, rgba(34, 24, 17, .94), rgba(17, 12, 9, .96));
+      box-shadow: 0 30px 100px rgba(0, 0, 0, .5);
+    }
+
+    .toast {
+      border-color: rgba(255, 255, 255, .14);
+      background: rgba(24, 17, 12, .9);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+    }
+
+    #cursor .cursor-label {
+      border-color: rgba(255, 255, 255, .14);
+      background: rgba(24, 17, 12, .86);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    @media (min-width: 1400px) {
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 24px;
+      }
+
+      .product {
+        height: 370px;
+      }
+
+      .product-visual {
+        height: 210px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .floating-cart {
+        right: 12px;
+        bottom: calc(var(--gesture-bar-height) + 10px);
+        min-height: 46px;
+        padding-inline: 13px;
+      }
+
+      .screen.menu-screen {
+        padding-bottom: 100px;
+      }
+
+      .menu-brand {
+        gap: 12px;
+      }
+
+      .menu-brand .brandmark {
+        width: 48px;
+        height: 48px;
+      }
+
+      .menu-brand:after {
+        left: 60px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr));
+        gap: 13px;
+      }
+
+      .product {
+        height: 326px;
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      .product-visual {
+        height: 172px;
+      }
+
+      .footer {
+        justify-content: center;
+        padding-inline: 10px;
+        font-size: 10px;
+      }
+
+      .footer strong {
+        padding: 6px 8px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .product {
+        height: 300px;
+      }
+
+      .product-visual {
+        height: 145px;
+      }
+
+      .product-name {
+        font-size: 15px;
+      }
+
+      .footer > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <main id="kiosk">
+      <aside class="kiosk-status" aria-label="Kiosk system status">
+        <div id="backend" class="status"><i class="dot"></i><span>PYTHON CONNECTING</span></div>
+        <div id="camera" class="status vision-status wait"><i class="dot"></i><strong>✦ AI VISION</strong><span>CAMERA READY</span></div>
+      </aside>
+      <aside id="cameraPreview" class="camera-preview" data-corner="bottom-right" aria-label="Live camera preview">
+        <span class="camera-preview-label">LIVE · HOVER TO MOVE</span>
+        <img id="cameraPreviewImage" src="/camera-preview" alt="Mirrored live camera preview">
+        <span class="camera-preview-fallback">Live camera preview will appear when the camera is ready.</span>
+      </aside>
+      <section id="content"></section>
+      <button id="floatingCart" class="floating-cart" type="button" data-action="go:cart" aria-label="Open cart">
+        <span id="cartDropHint" class="drop-hint" aria-hidden="true">✦ DROP TO ADD</span>
+        <span aria-hidden="true">🛒</span><span>CART</span><b id="cartCount">0</b>
+      </button>
+      <footer class="footer"><strong id="gestureHint">☝️ POINT + HOLD</strong><span id="footerText">Hold the cursor over a control to select · Camera is used locally for hand tracking</span></footer>
+    </main>
+  </div>
+  <div id="dragPreview" class="drag-preview" aria-hidden="true">
+    <span id="dragPreviewState" class="drag-preview-state">✦ DRAGGING</span>
+    <div id="dragPreviewCard"></div>
+  </div>
+  <div id="cursor">
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div><svg id="hold-svg" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#f0c47c" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="289" stroke-dashoffset="289" />
+    </svg>
+    <div class="cursor-label">HOLD TO SELECT</div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <div id="gestureDebug" hidden></div>
+  <div id="modalRoot"></div>
+  <div id="dev"></div>
+  <script>
+    const $ = s => document.querySelector(s), esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+    const PRODUCTS = [
+  {
+    "id": "espresso",
+    "n": "Espresso",
+    "p": 2.5,
+    "c": "hot",
+    "d": "Rich and bold espresso with a smooth finish.",
+    "ok": 1,
+    "image": "assets/coffee/espresso.jpg", "imageUrl": "https://images.pexels.com/photos/4736078/pexels-photo-4736078.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "double-espresso",
+    "n": "Double Espresso",
+    "p": 3.25,
+    "c": "hot",
+    "d": "A stronger double shot of smooth espresso.",
+    "ok": 1,
+    "image": "assets/coffee/double-espresso.jpg", "imageUrl": "https://images.pexels.com/photos/8736396/pexels-photo-8736396.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "americano",
+    "n": "Americano",
+    "p": 2.75,
+    "c": "hot",
+    "d": "Espresso balanced with hot water.",
+    "ok": 1,
+    "image": "assets/coffee/americano.jpg", "imageUrl": "https://images.pexels.com/photos/11234324/pexels-photo-11234324.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "long-black",
+    "n": "Long Black",
+    "p": 2.75,
+    "c": "hot",
+    "d": "Bold espresso poured over hot water.",
+    "ok": 1,
+    "image": "assets/coffee/long-black.jpg", "imageUrl": "https://images.pexels.com/photos/29497982/pexels-photo-29497982.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cappuccino",
+    "n": "Cappuccino",
+    "p": 3.5,
+    "c": "hot",
+    "d": "Espresso with steamed milk and creamy foam.",
+    "ok": 1,
+    "image": "assets/coffee/cappuccino.jpg", "imageUrl": "https://images.pexels.com/photos/5112652/pexels-photo-5112652.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "latte",
+    "n": "Latte",
+    "p": 3.5,
+    "c": "hot",
+    "d": "Smooth espresso blended with steamed milk.",
+    "ok": 1,
+    "image": "assets/coffee/latte.jpg", "imageUrl": "https://images.pexels.com/photos/5419239/pexels-photo-5419239.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "vanilla-latte",
+    "n": "Vanilla Latte",
+    "p": 4,
+    "c": "hot",
+    "d": "Creamy latte with sweet vanilla flavor.",
+    "ok": 1,
+    "image": "assets/coffee/vanilla-latte.jpg", "imageUrl": "https://images.pexels.com/photos/18395616/pexels-photo-18395616.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "caramel-latte",
+    "n": "Caramel Latte",
+    "p": 4,
+    "c": "hot",
+    "d": "Smooth latte with rich caramel flavor.",
+    "ok": 1,
+    "image": "assets/coffee/caramel-latte.jpg", "imageUrl": "https://images.pexels.com/photos/11277040/pexels-photo-11277040.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "hazelnut-latte",
+    "n": "Hazelnut Latte",
+    "p": 4,
+    "c": "hot",
+    "d": "Creamy latte with roasted hazelnut notes.",
+    "ok": 1,
+    "image": "assets/coffee/hazelnut-latte.jpg", "imageUrl": "https://images.pexels.com/photos/35852545/pexels-photo-35852545.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "mocha",
+    "n": "Mocha",
+    "p": 4.25,
+    "c": "hot",
+    "d": "Espresso, chocolate and steamed milk.",
+    "ok": 1,
+    "image": "assets/coffee/mocha.jpg", "imageUrl": "https://images.pexels.com/photos/8004561/pexels-photo-8004561.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "white-mocha",
+    "n": "White Mocha",
+    "p": 4.25,
+    "c": "hot",
+    "d": "Creamy espresso with white chocolate.",
+    "ok": 1,
+    "image": "assets/coffee/white-mocha.jpg", "imageUrl": "https://images.pexels.com/photos/5946979/pexels-photo-5946979.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "caramel-macchiato",
+    "n": "Caramel Macchiato",
+    "p": 4.5,
+    "c": "hot",
+    "d": "Espresso, milk and caramel drizzle.",
+    "ok": 1,
+    "image": "assets/coffee/caramel-macchiato.jpg", "imageUrl": "https://images.pexels.com/photos/8004569/pexels-photo-8004569.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "flat-white",
+    "n": "Flat White",
+    "p": 3.75,
+    "c": "hot",
+    "d": "Velvety microfoam over rich espresso.",
+    "ok": 1,
+    "image": "assets/coffee/flat-white.jpg", "imageUrl": "https://images.pexels.com/photos/35079943/pexels-photo-35079943.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cortado",
+    "n": "Cortado",
+    "p": 3.5,
+    "c": "hot",
+    "d": "Equal parts espresso and warm milk.",
+    "ok": 1,
+    "image": "assets/coffee/cortado.jpg", "imageUrl": "https://images.pexels.com/photos/32599385/pexels-photo-32599385.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "macchiato",
+    "n": "Macchiato",
+    "p": 3,
+    "c": "hot",
+    "d": "Espresso marked with a touch of foam.",
+    "ok": 1,
+    "image": "assets/coffee/macchiato.jpg", "imageUrl": "https://images.pexels.com/photos/37745284/pexels-photo-37745284.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "affogato",
+    "n": "Affogato",
+    "p": 4.5,
+    "c": "hot",
+    "d": "Espresso served over creamy vanilla ice cream.",
+    "ok": 1,
+    "image": "assets/coffee/affogato.jpg", "imageUrl": "https://images.pexels.com/photos/28729996/pexels-photo-28729996.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cinnamon-latte",
+    "n": "Cinnamon Latte",
+    "p": 4,
+    "c": "hot",
+    "d": "Warm cinnamon blended into a creamy latte.",
+    "ok": 1,
+    "image": "assets/coffee/cinnamon-latte.jpg", "imageUrl": "https://images.pexels.com/photos/32599371/pexels-photo-32599371.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "honey-latte",
+    "n": "Honey Latte",
+    "p": 4,
+    "c": "hot",
+    "d": "Naturally sweet honey and smooth espresso.",
+    "ok": 1,
+    "image": "assets/coffee/honey-latte.jpg", "imageUrl": "https://images.pexels.com/photos/33493391/pexels-photo-33493391.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "coconut-latte",
+    "n": "Coconut Latte",
+    "p": 4.25,
+    "c": "hot",
+    "d": "Espresso with creamy coconut milk.",
+    "ok": 1,
+    "image": "assets/coffee/coconut-latte.jpg", "imageUrl": "https://images.pexels.com/photos/8004564/pexels-photo-8004564.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cream-latte",
+    "n": "Cream Latte",
+    "p": 4.25,
+    "c": "hot",
+    "d": "Silky latte with a creamy finish.",
+    "ok": 1,
+    "image": "assets/coffee/cream-latte.jpg", "imageUrl": "https://images.pexels.com/photos/12201275/pexels-photo-12201275.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-americano",
+    "n": "Iced Americano",
+    "p": 3,
+    "c": "iced",
+    "d": "Chilled espresso with cold water and ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-americano.jpg", "imageUrl": "https://images.pexels.com/photos/34046801/pexels-photo-34046801.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-latte",
+    "n": "Iced Latte",
+    "p": 3.75,
+    "c": "iced",
+    "d": "Cold espresso and creamy milk over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-latte.jpg", "imageUrl": "https://images.pexels.com/photos/20205946/pexels-photo-20205946.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-vanilla-latte",
+    "n": "Iced Vanilla Latte",
+    "p": 4.25,
+    "c": "iced",
+    "d": "Vanilla latte served chilled over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-vanilla-latte.jpg", "imageUrl": "https://images.pexels.com/photos/26238864/pexels-photo-26238864.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-caramel-latte",
+    "n": "Iced Caramel Latte",
+    "p": 4.25,
+    "c": "iced",
+    "d": "Caramel latte served cold and refreshing.",
+    "ok": 1,
+    "image": "assets/coffee/iced-caramel-latte.jpg", "imageUrl": "https://images.pexels.com/photos/5741238/pexels-photo-5741238.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-hazelnut-latte",
+    "n": "Iced Hazelnut Latte",
+    "p": 4.25,
+    "c": "iced",
+    "d": "Hazelnut latte served chilled.",
+    "ok": 1,
+    "image": "assets/coffee/iced-hazelnut-latte.jpg", "imageUrl": "https://images.pexels.com/photos/22221934/pexels-photo-22221934.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-mocha",
+    "n": "Iced Mocha",
+    "p": 4.5,
+    "c": "iced",
+    "d": "Chocolate espresso drink served over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-mocha.jpg", "imageUrl": "https://images.pexels.com/photos/8284685/pexels-photo-8284685.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-white-mocha",
+    "n": "Iced White Mocha",
+    "p": 4.5,
+    "c": "iced",
+    "d": "White chocolate espresso drink over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-white-mocha.jpg", "imageUrl": "https://images.pexels.com/photos/4051583/pexels-photo-4051583.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-caramel-macchiato",
+    "n": "Iced Caramel Macchiato",
+    "p": 4.75,
+    "c": "iced",
+    "d": "Iced espresso with milk and caramel.",
+    "ok": 1,
+    "image": "assets/coffee/iced-caramel-macchiato.jpg", "imageUrl": "https://images.pexels.com/photos/7935281/pexels-photo-7935281.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cold-brew",
+    "n": "Cold Brew",
+    "p": 4,
+    "c": "iced",
+    "d": "Slow-steeped coffee with a smooth finish.",
+    "ok": 1,
+    "image": "assets/coffee/cold-brew.jpg", "imageUrl": "https://images.pexels.com/photos/28056044/pexels-photo-28056044.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "vanilla-cold-brew",
+    "n": "Vanilla Cold Brew",
+    "p": 4.5,
+    "c": "iced",
+    "d": "Smooth cold brew with vanilla.",
+    "ok": 1,
+    "image": "assets/coffee/vanilla-cold-brew.jpg", "imageUrl": "https://images.pexels.com/photos/13054437/pexels-photo-13054437.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "caramel-cold-brew",
+    "n": "Caramel Cold Brew",
+    "p": 4.5,
+    "c": "iced",
+    "d": "Cold brew finished with caramel.",
+    "ok": 1,
+    "image": "assets/coffee/caramel-cold-brew.jpg", "imageUrl": "https://images.pexels.com/photos/14941250/pexels-photo-14941250.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "nitro-cold-brew",
+    "n": "Nitro Cold Brew",
+    "p": 4.75,
+    "c": "iced",
+    "d": "Silky cold brew with a creamy texture.",
+    "ok": 1,
+    "image": "assets/coffee/nitro-cold-brew.jpg", "imageUrl": "https://images.pexels.com/photos/10225266/pexels-photo-10225266.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-espresso",
+    "n": "Iced Espresso",
+    "p": 3.25,
+    "c": "iced",
+    "d": "Chilled espresso over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-espresso.jpg", "imageUrl": "https://images.pexels.com/photos/13425585/pexels-photo-13425585.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-flat-white",
+    "n": "Iced Flat White",
+    "p": 4,
+    "c": "iced",
+    "d": "Velvety espresso and milk served cold.",
+    "ok": 1,
+    "image": "assets/coffee/iced-flat-white.jpg", "imageUrl": "https://images.pexels.com/photos/20009435/pexels-photo-20009435.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "dirty-latte",
+    "n": "Dirty Latte",
+    "p": 4.25,
+    "c": "iced",
+    "d": "Chilled milk with a bold espresso shot.",
+    "ok": 1,
+    "image": "assets/coffee/dirty-latte.jpg", "imageUrl": "https://images.pexels.com/photos/36457298/pexels-photo-36457298.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "matcha-latte",
+    "n": "Matcha Latte",
+    "p": 4,
+    "c": "non",
+    "d": "Creamy green tea latte with a smooth finish.",
+    "ok": 1,
+    "image": "assets/coffee/matcha-latte.jpg", "imageUrl": "https://images.pexels.com/photos/3650437/pexels-photo-3650437.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-matcha-latte",
+    "n": "Iced Matcha Latte",
+    "p": 4.25,
+    "c": "non",
+    "d": "Refreshing matcha and milk over ice.",
+    "ok": 1,
+    "image": "assets/coffee/iced-matcha-latte.jpg", "imageUrl": "https://images.pexels.com/photos/36522228/pexels-photo-36522228.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "chocolate-milk",
+    "n": "Chocolate Milk",
+    "p": 3.25,
+    "c": "non",
+    "d": "Creamy chocolate milk served chilled.",
+    "ok": 1,
+    "image": "assets/coffee/chocolate-milk.jpg", "imageUrl": "https://images.pexels.com/photos/3776531/pexels-photo-3776531.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-chocolate",
+    "n": "Iced Chocolate",
+    "p": 3.75,
+    "c": "non",
+    "d": "Rich chocolate drink served cold.",
+    "ok": 1,
+    "image": "assets/coffee/iced-chocolate.jpg", "imageUrl": "https://images.pexels.com/photos/4828331/pexels-photo-4828331.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "hot-chocolate",
+    "n": "Hot Chocolate",
+    "p": 3.75,
+    "c": "non",
+    "d": "Warm and creamy classic hot chocolate.",
+    "ok": 1,
+    "image": "assets/coffee/hot-chocolate.jpg", "imageUrl": "https://images.pexels.com/photos/31609729/pexels-photo-31609729.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "strawberry-milk",
+    "n": "Strawberry Milk",
+    "p": 3.75,
+    "c": "non",
+    "d": "Creamy milk with sweet strawberry flavor.",
+    "ok": 1,
+    "image": "assets/coffee/strawberry-milk.jpg", "imageUrl": "https://images.pexels.com/photos/19955847/pexels-photo-19955847.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "strawberry-matcha",
+    "n": "Strawberry Matcha",
+    "p": 4.5,
+    "c": "non",
+    "d": "Layered strawberry and creamy matcha.",
+    "ok": 1,
+    "image": "assets/coffee/strawberry-matcha.jpg", "imageUrl": "https://images.pexels.com/photos/4051560/pexels-photo-4051560.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "mango-matcha",
+    "n": "Mango Matcha",
+    "p": 4.5,
+    "c": "non",
+    "d": "Tropical mango paired with smooth matcha.",
+    "ok": 1,
+    "image": "assets/coffee/mango-matcha.jpg", "imageUrl": "https://images.pexels.com/photos/10530447/pexels-photo-10530447.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "chai-latte",
+    "n": "Chai Latte",
+    "p": 4,
+    "c": "non",
+    "d": "Warm spiced chai blended with creamy milk.",
+    "ok": 1,
+    "image": "assets/coffee/chai-latte.jpg", "imageUrl": "https://images.pexels.com/photos/15086188/pexels-photo-15086188.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "iced-chai-latte",
+    "n": "Iced Chai Latte",
+    "p": 4.25,
+    "c": "non",
+    "d": "Chilled spiced chai with creamy milk.",
+    "ok": 1,
+    "image": "assets/coffee/iced-chai-latte.jpg", "imageUrl": "https://images.pexels.com/photos/15086186/pexels-photo-15086186.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "croissant",
+    "n": "Croissant",
+    "p": 2.75,
+    "c": "bakery",
+    "d": "Buttery, flaky classic French-style pastry.",
+    "ok": 1,
+    "image": "assets/coffee/croissant.jpg", "imageUrl": "https://images.pexels.com/photos/37014532/pexels-photo-37014532.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "chocolate-croissant",
+    "n": "Chocolate Croissant",
+    "p": 3.25,
+    "c": "bakery",
+    "d": "Flaky pastry filled with rich chocolate.",
+    "ok": 1,
+    "image": "assets/coffee/chocolate-croissant.jpg", "imageUrl": "https://images.pexels.com/photos/36667988/pexels-photo-36667988.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "blueberry-muffin",
+    "n": "Blueberry Muffin",
+    "p": 3,
+    "c": "bakery",
+    "d": "Soft muffin packed with blueberries.",
+    "ok": 1,
+    "image": "assets/coffee/blueberry-muffin.jpg", "imageUrl": "https://images.pexels.com/photos/28730007/pexels-photo-28730007.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "chocolate-muffin",
+    "n": "Chocolate Muffin",
+    "p": 3,
+    "c": "bakery",
+    "d": "Moist chocolate muffin with rich cocoa flavor.",
+    "ok": 1,
+    "image": "assets/coffee/chocolate-muffin.jpg", "imageUrl": "https://images.pexels.com/photos/35745300/pexels-photo-35745300.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  },
+  {
+    "id": "cheesecake",
+    "n": "Cheesecake",
+    "p": 4.5,
+    "c": "bakery",
+    "d": "Creamy cheesecake with a smooth biscuit base.",
+    "ok": 1,
+    "image": "assets/coffee/cheesecake.jpg", "imageUrl": "https://images.pexels.com/photos/37029476/pexels-photo-37029476.jpeg?auto=compress&cs=tinysrgb&w=1000"
+  }
+];
+    const CATS = [
+  {
+    "id": "hot",
+    "n": "Hot Coffee",
+    "icon": "☕",
+    "desc": "Espresso classics & milk drinks",
+    "list": [
+      "espresso",
+      "double-espresso",
+      "americano",
+      "long-black",
+      "cappuccino",
+      "latte",
+      "vanilla-latte",
+      "caramel-latte",
+      "hazelnut-latte",
+      "mocha",
+      "white-mocha",
+      "caramel-macchiato",
+      "flat-white",
+      "cortado",
+      "macchiato",
+      "affogato",
+      "cinnamon-latte",
+      "honey-latte",
+      "coconut-latte",
+      "cream-latte"
+    ]
+  },
+  {
+    "id": "iced",
+    "n": "Iced Coffee",
+    "icon": "🧊",
+    "desc": "Cold espresso, cold brew & refreshers",
+    "list": [
+      "iced-americano",
+      "iced-latte",
+      "iced-vanilla-latte",
+      "iced-caramel-latte",
+      "iced-hazelnut-latte",
+      "iced-mocha",
+      "iced-white-mocha",
+      "iced-caramel-macchiato",
+      "cold-brew",
+      "vanilla-cold-brew",
+      "caramel-cold-brew",
+      "nitro-cold-brew",
+      "iced-espresso",
+      "iced-flat-white",
+      "dirty-latte"
+    ]
+  },
+  {
+    "id": "non",
+    "n": "Non-Coffee",
+    "icon": "🍵",
+    "desc": "Matcha, chocolate & creamy favorites",
+    "list": [
+      "matcha-latte",
+      "iced-matcha-latte",
+      "chocolate-milk",
+      "iced-chocolate",
+      "hot-chocolate",
+      "strawberry-milk",
+      "strawberry-matcha",
+      "mango-matcha",
+      "chai-latte",
+      "iced-chai-latte"
+    ]
+  },
+  {
+    "id": "bakery",
+    "n": "Bakery",
+    "icon": "🥐",
+    "desc": "Fresh pastries & sweet treats",
+    "list": [
+      "croissant",
+      "chocolate-croissant",
+      "blueberry-muffin",
+      "chocolate-muffin",
+      "cheesecake"
+    ]
+  }
+];
+    const SZ = ['Small', 'Medium', 'Large'], TP = ['Hot', 'Iced'], SU = ['0%', 'Low', 'Normal', 'Extra'], MK = [['Regular', 0], ['Oat', .3], ['Almond', .3]], AD = [['Whipped Cream', .5], ['Extra Shot', .5], ['Caramel', .5]];
+    const DWELL_DURATION = 850, DWELL_TARGET_MARGIN = 22, DWELL_MOVEMENT_TOLERANCE = 32, IDLE = 45000;
+    let state = { screen: 'welcome', cat: 'all', searchQuery: '', pid: 'lat', cfg: { size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 }, cart: [], edit: null, order: null, selectedIndex: 0 };
+    const kioskElement = $('#kiosk'), cursorElement = $('#cursor'), dragPreviewElement = $('#dragPreview');
+    const floatingCartElement = $('#floatingCart'), holdProgressElement = $('#hold-svg circle');
+    const cameraElement = $('#camera'), cameraLabelElement = $('#camera span');
+    const cameraPreviewElement = $('#cameraPreview'), cameraPreviewImageElement = $('#cameraPreviewImage');
+    const cameraPreviewCorners = ['bottom-right', 'bottom-left', 'top-left', 'top-right'];
+    let cameraPreviewCornerIndex = 0, cameraPreviewCursorHover = false, lastCameraPreviewMove = 0;
+    let cameraPreviewRetryTimer = null;
+    function moveCameraPreviewToNextCorner() {
+      const now = performance.now();
+      if (now - lastCameraPreviewMove < 700) return;
+      lastCameraPreviewMove = now;
+      cameraPreviewCornerIndex = (cameraPreviewCornerIndex + 1) % cameraPreviewCorners.length;
+      cameraPreviewElement.dataset.corner = cameraPreviewCorners[cameraPreviewCornerIndex];
+    }
+    function loadCameraPreview() {
+      clearTimeout(cameraPreviewRetryTimer);
+      cameraPreviewRetryTimer = null;
+      const previewUrl = new URL('/camera-preview', location.origin);
+      previewUrl.searchParams.set('t', String(Date.now()));
+      cameraPreviewImageElement.src = previewUrl.href;
+    }
+    cameraPreviewImageElement.addEventListener('load', () => {
+      clearTimeout(cameraPreviewRetryTimer);
+      cameraPreviewRetryTimer = null;
+      cameraPreviewImageElement.dataset.ready = 'true';
+      delete cameraPreviewImageElement.dataset.error;
+    });
+    cameraPreviewImageElement.addEventListener('error', () => {
+      cameraPreviewImageElement.dataset.ready = 'false';
+      cameraPreviewImageElement.dataset.error = 'true';
+      cameraPreviewElement.querySelector('.camera-preview-fallback').textContent =
+        'Camera preview reconnecting...';
+      clearTimeout(cameraPreviewRetryTimer);
+      cameraPreviewRetryTimer = setTimeout(loadCameraPreview, 3000);
+    });
+    cameraPreviewElement.addEventListener('mouseenter', moveCameraPreviewToNextCorner);
+    const dragPreviewCardElement = $('#dragPreviewCard');
+    const cursorLabelElement = cursorElement.querySelector('.cursor-label');
+    const cartDropHintElement = $('#cartDropHint'), dragPreviewStateElement = $('#dragPreviewState');
+    const gestureDebugElement = $('#gestureDebug');
+    let kioskRect = kioskElement.getBoundingClientRect(), cartRect = floatingCartElement.getBoundingClientRect();
+    let socket = null, lastGesture = 'NONE', idleTimer = null, toastTimer = null, orderSeq = 102;
+    let dwellTarget = null, dwellStart = 0, dwellStartX = 0, dwellStartY = 0, dwellTriggeredKey = null, dwellGraceTimer = null;
+    let dwellExitTimer = null, handLostDwellTimer = null, lastMouseTime = 0;
+    let interactionState = 'IDLE', hoverTarget = null, gestureScrollTarget = null;
+    let scrollStartY = 0, scrollStartTop = 0, scrollCurrentTop = 0, scrollTargetTop = 0, scrollMaxTop = 0, scrollLastY = 0;
+    let scrollArmed = false, scrollVelocity = 0, scrollLastTargetTop = 0, scrollLastUpdate = 0, scrollOriginalBehavior = '', scrollExitTimer = null;
+    let dragState = null, dragCandidate = null, dragCandidateTimer = null, dragLostTimer = null, pendingPinchReleaseTimer = null, grabSequence = 0;
+    let cursorPixelX = kioskRect.left + kioskRect.width / 2, cursorPixelY = kioskRect.top + kioskRect.height / 2;
+    let cursorTargetX = cursorPixelX, cursorTargetY = cursorPixelY, cursorLastHitX = NaN, cursorLastHitY = NaN, cursorRendered = false;
+    let lastX = 640, lastY = 360, trackingActive = false, lastGestureDetails = '', lastDebugUpdate = 0;
+    let lastAnimationTime = 0, fpsWindowStart = 0, fpsWindowFrames = 0, measuredFps = 0, pendingFrameHandle = 0;
+    let terminalStateTimer = null;
+    const DRAG_START_DELAY = 120, DRAG_LOST_TIMEOUT = 650;
+    const SCROLL_START_DISTANCE = 12, SCROLL_SENSITIVITY = 2.2, SCROLL_EASE = 18, SCROLL_FRICTION = 7;
+    const DRAG_ACTIVE_STATES = new Set(['GRABBED', 'DRAGGING', 'OVER_CART']);
+    const INTERACTION_LOCKED_STATES = new Set([...DRAG_ACTIVE_STATES, 'DROP_PROCESSING', 'CANCEL_PROCESSING', 'DROP_SUCCESS', 'CANCELLED']);
+    const DEBUG_MODE = new URLSearchParams(location.search).get('debug');
+    const GESTURE_DEBUG = DEBUG_MODE === 'gestures' || DEBUG_MODE === 'performance';
+    const PERFORMANCE_DEBUG = DEBUG_MODE === 'performance';
+    const SOUND_PATHS = Object.freeze({
+      hover: 'assets/sounds/hover.wav',
+      grab: 'assets/sounds/grab into the cart.wav',
+      cancel: 'assets/sounds/cancel grab.wav',
+      success: 'assets/sounds/sucess payment.wav',
+    });
+    const SOUND_VOLUME = Object.freeze({ hover: 0.25, grab: 0.45, cancel: 0.45, success: 0.55 });
+    class KioskSoundManager {
+      constructor() {
+        this.audio = new Map();
+        this.playedEvents = new Set();
+        this.unlocked = false;
+      }
+      preload() {
+        if (typeof Audio === 'undefined') {
+          console.warn('[SmartCoffee Sound] Audio playback is unavailable in this browser.');
+          return;
+        }
+        for (const [name, path] of Object.entries(SOUND_PATHS)) {
+          try {
+            const url = new URL(path, document.baseURI);
+            const audio = new Audio(url.href);
+            audio.preload = 'auto';
+            audio.volume = SOUND_VOLUME[name];
+            audio.addEventListener('error', () => {
+              console.warn(`[SmartCoffee Sound] Sound file failed to load: ${url.pathname}`);
+            }, { once: true });
+            this.audio.set(name, audio);
+            audio.load();
+          } catch (error) {
+            console.warn(`[SmartCoffee Sound] Could not prepare ${path}:`, error);
+          }
+        }
+      }
+      unlock() {
+        if (this.unlocked) return;
+        this.unlocked = true;
+        for (const audio of this.audio.values()) {
+          audio.muted = true;
+          try {
+            const playback = audio.play();
+            const finishUnlock = () => {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.muted = false;
+            };
+            if (playback?.then) {
+              playback.then(finishUnlock).catch(error => {
+                audio.muted = false;
+                if (error.name !== 'NotAllowedError') {
+                  console.warn('[SmartCoffee Sound] Audio unlock failed:', error);
+                }
+              });
+            } else {
+              finishUnlock();
+            }
+          } catch (error) {
+            audio.muted = false;
+            if (error.name !== 'NotAllowedError') {
+              console.warn('[SmartCoffee Sound] Audio unlock failed:', error);
+            }
+          }
+        }
+      }
+      play(name, eventId = null) {
+        const audio = this.audio.get(name);
+        if (!audio) {
+          console.warn(`[SmartCoffee Sound] Missing or unavailable sound: ${name}`);
+          return;
+        }
+        if (eventId !== null) {
+          const key = `${name}:${eventId}`;
+          if (this.playedEvents.has(key)) return;
+          this.playedEvents.add(key);
+          if (this.playedEvents.size > 100) {
+            this.playedEvents.delete(this.playedEvents.values().next().value);
+          }
+        }
+        try {
+          audio.currentTime = 0;
+          const playback = audio.play();
+          if (playback?.catch) {
+            playback.catch(error => {
+              if (error.name !== 'NotAllowedError') {
+                console.warn(`[SmartCoffee Sound] Could not play ${name}:`, error);
+              }
+            });
+          }
+        } catch (error) {
+          console.warn(`[SmartCoffee Sound] Could not play ${name}:`, error);
+        }
+      }
+    }
+    const soundManager = new KioskSoundManager();
+    soundManager.preload();
+    document.addEventListener('pointerdown', () => soundManager.unlock(), { once: true, capture: true });
+    document.addEventListener('click', () => soundManager.unlock(), { once: true, capture: true });
+    document.addEventListener('keydown', () => soundManager.unlock(), { once: true, capture: true });
+    if (GESTURE_DEBUG) gestureDebugElement.hidden = false;
+    const resizeObserver = new ResizeObserver(() => {
+      kioskRect = kioskElement.getBoundingClientRect();
+      refreshCartBounds();
+      setCursorTarget(lastX, lastY);
+    });
+    resizeObserver.observe(kioskElement);
+    resizeObserver.observe(floatingCartElement);
+    function isDragActive() {
+      return Boolean(dragState && DRAG_ACTIVE_STATES.has(interactionState));
+    }
+    function setInteractionState(next) {
+      if (interactionState === next) return;
+      interactionState = next;
+      kioskElement.dataset.interaction = next;
+      updateGestureDebug();
+    }
+    function updateGestureDebug(gesture = lastGesture, handDetected = trackingActive, details = lastGestureDetails) {
+      if (!GESTURE_DEBUG) return;
+      const now = performance.now();
+      if (now - lastDebugUpdate < 100) return;
+      lastDebugUpdate = now;
+      const panel = gestureDebugElement;
+      const productName = dragState?.product?.n || dragCandidate?.dataset.productId && product(dragCandidate.dataset.productId)?.n || '—';
+      const pinchDistance = details.match(/thumb\/index ([0-9.]+)×/)?.[1] || '—';
+      const performanceLabel = PERFORMANCE_DEBUG ? `  ·  FPS  ${measuredFps || '—'}` : '';
+      panel.textContent = `GESTURE  ${gesture}  ·  STATE  ${interactionState}  ·  PINCH  ${pinchDistance}  ·  CURSOR  ${Math.round(cursorPixelX)} / ${Math.round(cursorPixelY)}  ·  PRODUCT  ${productName}  ·  DROP  ${dragState?.overCart ? 'CART' : '—'}  ·  HAND  ${handDetected ? 'ACTIVE' : 'LOST'}${performanceLabel}`;
+    }
+    function refreshCartBounds() {
+      cartRect = floatingCartElement.getBoundingClientRect();
+    }
+    function updateVisionStatus(message) {
+      const className = message.handDetected
+        ? 'status vision-status'
+        : 'status vision-status wait';
+      const text = message.handDetected && message.gesture && message.gesture !== 'NONE'
+        ? `${message.gesture.replaceAll('_', ' ')} · ${Math.round((message.gestureConfidence || 0) * 100)}%`
+        : message.handDetected ? 'HAND DETECTED' : 'WAITING FOR HAND';
+      const title = message.gestureDetails || (message.handDetected
+        ? 'Show your hand to the camera'
+        : 'Show your hand to the camera');
+      if (cameraElement.className !== className) cameraElement.className = className;
+      if (cameraLabelElement.textContent !== text) cameraLabelElement.textContent = text;
+      if (cameraElement.title !== title) cameraElement.title = title;
+    }
+    let lastHoveredTarget = null, hoverSoundExitTimer = null;
+    function updateProductHoverSound(target) {
+      if (!target) {
+        if (!hoverSoundExitTimer) {
+          hoverSoundExitTimer = setTimeout(() => {
+            hoverSoundExitTimer = null;
+            lastHoveredTarget = null;
+          }, 120);
+        }
+        return;
+      }
+      clearTimeout(hoverSoundExitTimer);
+      hoverSoundExitTimer = null;
+      if (target === lastHoveredTarget) return;
+      lastHoveredTarget = target;
+      soundManager.play('hover');
+    }
+    function setCursorTarget(x, y) {
+      lastX = Math.max(0, Math.min(1280, Number(x) || 0));
+      lastY = Math.max(0, Math.min(720, Number(y) || 0));
+      cursorTargetX = kioskRect.left + (lastX / 1280) * kioskRect.width;
+      cursorTargetY = kioskRect.top + (lastY / 720) * kioskRect.height;
+    }
+    const product = id => PRODUCTS.find(p => p.id === id), money = n => '$' + Number(n).toFixed(2), unit = (c, p) => p.p + MK[c.milk][1] + c.add.reduce((a, i) => a + AD[i][1], 0), total = () => state.cart.reduce((a, i) => a + unit(i, product(i.pid)) * i.qty, 0), count = () => state.cart.reduce((a, i) => a + i.qty, 0);
+    function meta(i) { return [SZ[i.size], TP[i.temp], SU[i.sugar] + ' sugar', MK[i.milk][0] + ' milk', ...i.add.map(x => AD[x][0])].join(' · ') }
+    function productImage(p, cls='product-photo') { const fallback = p.image; return `<img class="${cls}" src="${esc(p.imageUrl || p.image)}" data-fallback="${esc(fallback)}" alt="${esc(p.n)}" loading="lazy" referrerpolicy="no-referrer" onerror="if(this.src!==this.dataset.fallback){this.src=this.dataset.fallback}else{this.classList.add('image-error');this.alt='Image unavailable'}">` }
+    function btn(label, action, cls = '', extra = '') { const isHold = cls.includes('hold'); const inner = isHold ? `<span class="progress"></span><span>${label}</span>` : label; return `<button class="btn ${cls}" data-action="${action}" ${extra}>${inner}</button>` }
+    function back() { return '<button class="back" data-action="back">← Back</button>' }
+    function setFooter(g, t) { $('#gestureHint').textContent = g; $('#footerText').textContent = t }
+    function shell(title, sub, body, backBtn = true, screenClass = '') {
+      const cartBtn = state.screen !== 'cart'
+        ? `<button class="btn secondary header-cart-btn" data-action="go:cart" style="min-height:38px;padding:0 14px;font-size:12px;font-weight:800;border-radius:12px;display:inline-flex;align-items:center;gap:6px">🛒 Cart (${count()})</button>`
+        : '<div style="width:70px"></div>';
+      return `<div class="screen ${screenClass}"><div class="toolbar">${backBtn ? back() : '<span></span>'}<div style="text-align:center"><div class="eyebrow"><i></i> TOUCHLESS ORDERING</div><h2>${title}</h2>${sub ? `<div class="lead">${sub}</div>` : ''}</div><div style="min-width:70px;text-align:right">${cartBtn}</div></div>${body}</div>`
+    }
+    function render() {
+      $('#cartCount').textContent = count();
+      cursorLastHitX = NaN;
+      cursorLastHitY = NaN;
+      if (!dragState && (interactionState === 'POINTING' || interactionState === 'DWELLING')) {
+        if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+        hoverTarget = null;
+        clearDwellSelection();
+        dwellTriggeredKey = null;
+        setInteractionState('IDLE');
+      }
+      const map = { welcome: renderWelcome, help: renderHelp, cats: renderCats, prods: renderProducts, detail: renderDetail, cart: renderCart, review: renderReview, confirm: renderConfirm, ticket: renderTicket, kitchen: renderKitchen, camerr: () => renderError('Camera unavailable', 'Please check your webcam connection and try again.', 'TRY AGAIN'), hand: () => renderError('Show your hand', 'Place your hand inside the interaction area.', 'RETRY'), gest: () => renderError('Gesture not recognized', 'Try again and keep your hand steady.', 'TRY AGAIN') };
+      $('#content').innerHTML = (map[state.screen] || renderWelcome)(); bind($('#content'));
+      if (state.screen === 'detail') {
+        const detailArt = $('#content .detail-art');
+        if (detailArt) detailArt.dataset.productId = state.pid;
+      }
+      const search = $('#productSearch');
+      if (search) {
+        renderMenuProducts();
+        search.addEventListener('input', () => {
+          state.searchQuery = search.value;
+          renderMenuProducts();
+        });
+      }
+      resetIdle();
+    }
+    function renderWelcome() { return renderMenuScreen() }
+    function renderHelp() { const G = [['☝️', 'Point', 'Move', 'Point with one index finger to move the cursor'], ['☝️', 'Hold', 'Select', 'Keep the cursor over a control until the ring completes'], ['✌️', 'Two fingers', 'Scroll', 'Move two fingers up and down to scroll'], ['🤏', 'Pinch', 'Grab', 'Pinch a drink, then release over the cart'], ['✊', 'Fist', 'Back', 'Make a fist to return or cancel'], ['3️⃣', 'Three fingers', 'Relax', 'Pause hold-to-select while you decide']]; setFooter('☝️ POINT · ☝️ HOLD · ✌️ TWO FINGERS · 🤏 PINCH · ✊ FIST · 3️⃣ RELAX', 'Show three fingers to pause hold-to-select while you decide'); return shell('How to order', 'Simple gestures. Clear feedback. No touchscreen required.', `<div class="category-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));margin-top:12px">${G.map(g => `<div class="category" style="min-height:155px;padding:17px"><div style="font-size:28px;color:var(--gold)">${g[0]}</div><div style="font-weight:800;margin-top:10px">${g[1]}</div><div style="color:var(--gold);font-size:9px;letter-spacing:.1em;margin-top:4px">${g[2].toUpperCase()}</div><p style="font-size:11px;margin:6px 0">${g[3]}</p></div>`).join('')}</div><div style="text-align:center;margin-top:22px">${btn('Got it · Start ordering', 'go:cats')}</div>`) }
+    function renderCats() { return renderMenuScreen() }
+    function renderProducts() { return renderMenuScreen() }
+    function renderMenuProducts() { const grid = $('#menuProducts'); if (!grid) return; const category = CATS.find(c => c.id === state.cat); const query = state.searchQuery.trim().toLowerCase(); const items = PRODUCTS.filter(p => (!category || category.list.includes(p.id)) && (!query || `${p.n} ${p.d} ${p.c}`.toLowerCase().includes(query))); grid.innerHTML = items.map(p => `<button class="product ${p.ok ? '' : 'off'}" data-product-id="${esc(p.id)}" data-action="prod:${p.id}"><div class="product-visual"><span class="tag">${p.c === 'hot' ? 'ESPRESSO BAR' : p.c === 'iced' ? 'COLD BREW BAR' : p.c === 'non' ? 'HOUSE FAVORITE' : 'BAKERY'}</span>${productImage(p)}</div><div class="product-info"><div class="product-name">${p.n}</div><div class="product-desc">${p.d}</div><div class="product-bottom"><span class="price">${money(p.p)}</span><span class="avail ${p.ok ? '' : 'off'}">${p.ok ? '● AVAILABLE' : '× UNAVAILABLE'}</span></div></div></button>`).join('') || '<div class="empty"><p class="lead">No drinks match your search.</p></div>'; $('#menuResultCount').textContent = `${items.length} product${items.length === 1 ? '' : 's'}`; bind(grid) }
+    function renderMenuScreen() { setFooter('☝️ POINT / MOVE · ☝️ HOLD / SELECT · ✌️ TWO FINGERS / SCROLL · 🤏 PINCH / GRAB · ✊ FIST / BACK · 3️⃣ RELAX / PAUSE HOLD', 'Point to move · hold to select · three fingers to pause while you decide'); const categories = [{ id: 'all', n: 'All' }, ...CATS]; return `<div class="screen menu-screen"><section class="menu-brand"><div class="brandmark">☕</div><div><h1>SmartCoffee</h1><p>AI-Powered Coffee Experience</p></div></section><div class="menu-tools"><label class="search-wrap"><span aria-hidden="true">⌕</span><input id="productSearch" type="search" placeholder="Search coffee, tea, and bakery" value="${esc(state.searchQuery)}" autocomplete="off" aria-label="Search products"></label><button class="btn secondary menu-cart-btn" data-action="go:cart" style="min-height:48px;padding:0 20px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:800;border-radius:16px;white-space:nowrap;background:rgba(214,160,96,0.12);border:1px solid var(--line2);color:var(--cream)">🛒 View Cart <b style="background:var(--gold);color:#1a0e08;padding:2px 9px;border-radius:999px;font-size:12px">${count()}</b></button></div><section aria-label="Product categories"><div class="category-strip">${categories.map(c => `<button class="category-pill ${state.cat === c.id ? 'active' : ''}" data-action="cat:${c.id}">${c.n}</button>`).join('')}</div></section><section aria-label="Products"><div class="menu-section-heading"><h2>Products</h2><span id="menuResultCount" class="menu-result-count"></span></div><div id="menuProducts" class="product-grid"></div></section></div>` }
+    function renderDetail() { const p = product(state.pid), c = state.cfg, u = unit(c, p); const group = (title, key, arr, multi = false) => `<div class="option-section"><div class="option-title">${title}</div><div class="options">${arr.map((x, i) => { const name = Array.isArray(x) ? x[0] : x; const on = multi ? c.add.includes(i) : c[key] === i; return `<button class="option ${on ? 'active' : ''}" data-action="${multi ? 'add' : 'opt'}:${key}:${i}">${multi ? (on ? '✓ ' : '+') : ''}${name}${multi ? ` +${money(x[1])}` : ''}</button>` }).join('')}</div></div>`; setFooter('☝️ HOLD · ✌️ TWO FINGERS', 'Hold over an option to select · use two fingers to scroll'); return shell(p.n, p.d, `<div class="detail-layout"><div class="detail-art"><span class="tag" style="position:absolute;top:18px;left:18px">SIGNATURE DRINK</span>${productImage(p, 'detail-photo')}</div><div class="detail-copy" role="region" aria-label="Product customization" tabindex="0"><div class="eyebrow">${money(p.p)} BASE PRICE</div><h2 style="margin-top:5px">Customize your ${p.n}</h2>${group('Size', 'size', SZ.map(x => x[0]))}${group('Temperature', 'temp', TP)}${group('Sugar', 'sugar', SU)}${group('Milk', 'milk', MK)}${group('Add-ons', 'add', AD, true)}<div class="detail-footer"><div class="quantity"><button class="qbtn" data-action="qty:-1">−</button><span class="qnum">${c.qty}</span><button class="qbtn" data-action="qty:1">+</button></div><div style="text-align:right"><div class="muted" style="font-size:10px">TOTAL</div><div class="price" style="font-size:30px">${money(u * c.qty)}</div></div><div>${btn(state.edit === null ? 'Add to cart' : 'Update cart', 'addcart', 'add-to-cart')}</div></div></div></div>`, true, 'detail-screen') }
+    function renderCart() {
+      if (!state.cart.length) {
+        setFooter('☝️ HOLD · ✊ FIST', 'Hold to select · fist to go back');
+        return shell('Your cart', 'Your order is currently empty.', `<div class="empty"><div><div class="empty-icon">🛒</div><h2>Nothing here yet.</h2><p class="lead">Your coffee journey starts with one great choice.</p>${btn('Browse the menu  →', 'go:cats')}</div></div>`);
+      }
+      setFooter('☝️ HOLD · ✊ FIST', 'Hold to select · fist to go back');
+      return shell('Your cart', `${count()} item${count() === 1 ? '' : 's'} · ${money(total())} total`, `<div class="cart-layout"><div class="cart-list">${state.cart.map((i, k) => { const p = product(i.pid); return `<div class="cart-item"><div class="mini-cup">${productImage(p, 'mini-photo')}</div><div><div class="cart-name">${p.n}</div><div class="cart-meta">${meta(i)}</div><div class="muted" style="font-size:11px;margin-top:6px">${money(unit(i, p))} each</div></div><div class="quantity"><button class="qbtn" data-action="cartqty:${k}:-1">−</button><span class="qnum">${i.qty}</span><button class="qbtn" data-action="cartqty:${k}:1">+</button></div><div style="text-align:right"><div class="price">${money(unit(i, p) * i.qty)}</div><button class="back" style="margin-top:8px;color:#ff9c91" data-action="remove:${k}">Remove</button></div></div>` }).join('')}</div><aside class="summary"><div class="eyebrow">ORDER SUMMARY</div><div class="sumrow"><span>Subtotal</span><span>${money(total())}</span></div><div class="sumrow"><span>Service</span><span>$0.00</span></div><div class="sumtotal"><span>Total</span><span>${money(total())}</span></div>${btn('Review & confirm', 'reviewhold')} ${btn('Continue ordering', 'go:cats', 'secondary')}</aside></div>`);
+    }
+    function renderReview() { setFooter('◉ HOLD TO CONFIRM', 'Keep the cursor on the confirmation button until its ring completes'); return shell('Review & confirm', 'One last look before your order is sent to the bar.', `<div class="review-grid"><div class="review-card"><div class="eyebrow">YOUR ORDER</div><div class="review-items">${state.cart.map(i => { const p = product(i.pid); return `<div class="review-line"><div><b>${p.n} × ${i.qty}</b><div class="muted" style="font-size:11px;margin-top:5px">${meta(i)}</div></div><strong>${money(unit(i, p) * i.qty)}</strong></div>` }).join('')}</div><div class="sumtotal"><span>Total</span><span>${money(total())}</span></div></div><div class="confirm-panel"><div class="hold-ring">☕</div><div class="eyebrow">DELIBERATE CONFIRMATION</div><h3 style="margin:10px 0">Ready to make it?</h3><p class="lead" style="max-width:310px">Keep the cursor on the confirmation button until its ring completes.</p>${btn('Hold to confirm', 'confirmhold', 'hold', 'data-hold="1" style="width:100%;margin-top:15px"')} ${btn('Edit my order', 'go:cart', 'secondary', 'style="width:100%;margin-top:10px"')}</div></div>`) }
+    function renderConfirm() { const o = state.order || { id: '#A102', items: state.cart, total: total() }; setFooter('✓ ORDER RECEIVED', 'Your order has been sent to the queue · Preparing your coffee'); return `<div class="screen"><div class="success"><div style="text-align:center"><div class="success-mark">✓</div><div class="eyebrow" style="justify-content:center;margin-top:25px">ORDER CONFIRMED</div><h2>Your coffee is on the way.</h2><p class="lead">Order number</p><div class="order-id">${esc(o.id || o.order_id || '#A102')}</div><p class="lead">Please keep this number for pickup.</p>${btn('View order ticket  →', 'go:ticket')} ${btn('Start new order', 'reset', 'secondary', 'style="margin-left:8px"')}</div><div class="ticket"><div style="font-weight:800;letter-spacing:.1em">SMART COFFEE</div><div class="muted" style="font-size:11px">TOUCHLESS KIOSK</div><hr>${(o.items || state.cart).map(i => { const p = product(i.pid) || i.product; const qty = i.qty || i.quantity || 1; return `<div class="ticket-row"><span>${esc(p.n || p.name)} × ${qty}</span><b>${money((p.p || p.price) * qty)}</b></div>` }).join('')}<hr><div class="ticket-row ticket-total"><span>TOTAL</span><span>${money(o.total || o.order?.total || total())}</span></div><hr><div class="muted" style="font-size:10px">${new Date().toLocaleString()}</div></div></div></div>` }
+    function renderTicket() { const o = state.order || { id: '#A102', items: state.cart, total: total() }; setFooter('☝️ POINT + HOLD', 'Point and hold New customer to start a new session'); return `<div class="screen" style="display:grid;place-items:center"><div class="ticket" style="width:460px"><div style="text-align:center"><div style="font-size:30px">☕</div><div style="font-weight:800;font-size:20px">SMART COFFEE</div><div class="muted">ORDER TICKET</div><div class="order-id" style="font-size:38px;margin:15px 0">${esc(o.id || o.order_id || '#A102')}</div></div><hr>${(o.items || state.cart).map(i => { const p = product(i.pid) || i.product; const qty = i.qty || i.quantity || 1; return `<div class="ticket-row"><span>${esc(p.n || p.name)} × ${qty}</span><b>${money((p.p || p.price) * qty)}</b></div>` }).join('')}<hr><div class="ticket-row ticket-total"><span>TOTAL</span><span>${money(o.total || total())}</span></div><div style="text-align:center;margin-top:25px">${btn('New customer', 'reset')}</div></div></div>` }
+    function renderKitchen() { setFooter('STAFF MODE', 'Order queue · Pending → Preparing → Ready'); return shell('Kitchen queue', 'Staff view for the bar team.', `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;height:100%">${['PENDING', 'PREPARING', 'READY'].map((s, si) => `<div class="summary" style="height:100%"><div class="eyebrow">${s}</div><div style="margin-top:15px">${(state.kitchen || []).filter(x => x.s === si).map(x => `<div class="cart-item" style="grid-template-columns:1fr;margin-bottom:10px"><b>${x.id}</b><span class="muted">${x.i}</span><strong>${money(x.t)}</strong><button class="btn secondary" data-action="kitchen:${x.id}" style="min-height:42px">${si === 0 ? 'Start' : si === 1 ? 'Ready' : 'Complete'}</button></div>`).join('') || '<div class="muted" style="padding-top:30px">No orders here.</div>'}</div></div>`).join('')}</div>`) }
+    function renderError(title, msg, action) { setFooter('CAMERA CHECK', 'Point at retry to continue'); return `<div class="screen error-wrap"><div class="error-card"><div class="error-icon">!</div><div class="eyebrow" style="justify-content:center;color:#ff9c91">ATTENTION</div><h2>${title}</h2><p class="lead">${msg}</p>${btn(action, 'retry')}</div></div>` }
+    function renderTimeout() { return `<div class="modal-backdrop"><div class="modal"><div style="font-size:44px">◷</div><h3>Still ordering?</h3><p>No activity has been detected for a while. Continue your session or reset it for the next customer.</p><div class="modal-actions">${btn('Reset session', 'reset', 'secondary')}${btn('Continue ordering', 'closemodal')}</div></div></div>` }
+    function bind(root = document) {
+      root.querySelectorAll('[data-action]').forEach(el => {
+        el.addEventListener('click', () => action(el.dataset.action, el));
+        el.addEventListener('mouseenter', () => cursorHover(el, true));
+        el.addEventListener('mouseleave', () => cursorHover(el, false));
+      });
+    }
+    function getDwellTargetKey(target) {
+      if (target.id === 'floatingCart') return 'floatingCart';
+      if (target.dataset.action) return `action:${target.dataset.action}`;
+      return target.id ? `element:${target.id}` : null;
+    }
+    function cursorHover(el, on) {
+      const target = el?.closest?.('[data-action], #floatingCart, input:not([disabled]), select:not([disabled]), textarea:not([disabled]), .detail-art[data-product-id], .product[data-product-id]');
+      if (!target) return;
+      const draggable = getDragProductTarget(target);
+      if (on) {
+        if (
+          interactionState === 'SCROLLING' ||
+          dragState ||
+          INTERACTION_LOCKED_STATES.has(interactionState) ||
+          lastGesture === 'FIST' ||
+          lastGesture === 'RELAX'
+        ) {
+          $('#cursor').classList.remove('hover');
+          clearDwellSelection();
+          return;
+        }
+        clearTimeout(dwellExitTimer);
+        dwellExitTimer = null;
+        if (hoverTarget === target && dwellTarget === target) return;
+        if (hoverTarget && hoverTarget !== target) hoverTarget.classList.remove('pinch-ready');
+        hoverTarget = target;
+        const targetKey = getDwellTargetKey(target);
+        if (dwellTriggeredKey && dwellTriggeredKey !== targetKey) dwellTriggeredKey = null;
+        if (interactionState !== 'GRAB_ARMING') setInteractionState('POINTING');
+        if (draggable) target.classList.add('pinch-ready');
+        updateProductHoverSound(target);
+        $('#cursor').classList.add('hover');
+        $('#cursor .cursor-label').textContent = draggable
+          ? 'HOLD TO SELECT · PINCH TO GRAB'
+          : target.id === 'floatingCart' || target.dataset.action === 'go:cart' ? 'HOLD TO OPEN CART'
+          : target.dataset.hold ? 'HOLD TO CONFIRM' : 'HOLD TO SELECT';
+        beginDwellSelection(target);
+      } else {
+        target.classList.remove('pinch-ready');
+        if (hoverTarget === target) {
+          hoverTarget = null;
+          updateProductHoverSound(null);
+        }
+        if (dwellTriggeredKey === getDwellTargetKey(target)) dwellTriggeredKey = null;
+        $('#cursor').classList.remove('hover');
+        if (dwellTarget === target) {
+          if (!dwellExitTimer) {
+            dwellExitTimer = setTimeout(() => {
+              dwellExitTimer = null;
+              if (dwellTarget === target) clearDwellSelection();
+            }, 180);
+          }
+        } else {
+          clearDwellSelection();
+        }
+        if (interactionState === 'POINTING' || interactionState === 'DWELLING') {
+          if (!dwellExitTimer) setInteractionState('IDLE');
+        }
+      }
+    }
+    function clearDwellSelection() {
+      clearTimeout(dwellGraceTimer);
+      dwellGraceTimer = null;
+      clearTimeout(dwellExitTimer);
+      dwellExitTimer = null;
+      clearTimeout(handLostDwellTimer);
+      handLostDwellTimer = null;
+      dwellTarget = null;
+      dwellStart = 0;
+      dwellStartX = 0;
+      dwellStartY = 0;
+      if (holdProgressElement) holdProgressElement.style.strokeDashoffset = '289';
+      document.querySelectorAll('.btn.hold .progress').forEach(p => p.style.width = '0%');
+      cursorElement.classList.remove('holding');
+      if (interactionState === 'DWELLING') {
+        setInteractionState(hoverTarget ? 'POINTING' : 'IDLE');
+      }
+    }
+    function beginDwellSelection(target) {
+      if (
+        !target ||
+        !target.isConnected ||
+        (!target.matches('[data-action], #floatingCart, input:not([disabled]), select:not([disabled]), textarea:not([disabled])')) ||
+        interactionState === 'SCROLLING' ||
+        interactionState === 'GRAB_ARMING' ||
+        dragState ||
+        lastGesture === 'FIST' ||
+        lastGesture === 'RELAX' ||
+        dwellTriggeredKey === getDwellTargetKey(target) ||
+        target.dataset.hold === 'done' ||
+        target.disabled
+      ) return;
+      if (dwellTarget === target && interactionState === 'DWELLING') {
+        clearTimeout(dwellExitTimer);
+        dwellExitTimer = null;
+        return;
+      }
+      clearDwellSelection();
+      dwellTarget = target;
+      dwellStart = performance.now();
+      dwellStartX = cursorPixelX;
+      dwellStartY = cursorPixelY;
+      setInteractionState('DWELLING');
+      cursorElement.classList.add('holding');
+      if (holdProgressElement) holdProgressElement.style.strokeDashoffset = '289';
+    }
+    function action(a, el) { resetIdle(); const [type, ...args] = a.split(':'); if (type === 'go') { state.screen = args[0]; render(); return } if (type === 'back') { soundManager.play('cancel'); if (state.screen === 'detail') { state.screen = 'welcome'; toast('← Back', 'Returned to drinks menu'); } else if (state.screen === 'review') { state.screen = 'cart'; toast('← Back', 'Returned to cart'); } else if (state.screen === 'cart') { state.screen = 'welcome'; toast('← Back', 'Returned to drinks menu'); } else if (state.screen === 'help') { state.screen = 'welcome'; toast('← Back', 'Returned to drinks menu'); } else if (['confirm', 'ticket'].includes(state.screen)) { state.screen = 'welcome'; toast('← Home', 'Started new session'); } else if (state.screen === 'welcome' || state.screen === 'cats' || state.screen === 'prods') { if (state.cat !== 'all') { state.cat = 'all'; toast('← All drinks', 'Reset category filter'); } else if (state.searchQuery) { state.searchQuery = ''; toast('← Cleared', 'Reset search'); } else { toast('← Menu', 'Already at home menu'); } state.screen = 'welcome'; } else { state.screen = 'welcome'; } render(); return } if (type === 'reset') { state = { screen: 'welcome', cat: 'all', searchQuery: '', pid: 'lat', cfg: { size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 }, cart: [], edit: null, order: null, selectedIndex: 0 }; send('reset_session'); render(); return } if (type === 'cat') { state.cat = args[0]; state.screen = 'welcome'; render(); return } if (type === 'prod') { const p = product(args[0]); if (!p?.ok) { toast('Unavailable', 'Choose another drink'); return } state.pid = args[0]; state.cfg = { size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 }; state.screen = 'detail'; render(); return } if (type === 'opt') { state.cfg[args[0]] = Number(args[1]); render(); return } if (type === 'add') { const i = Number(args[1]); const idx = state.cfg.add.indexOf(i); if (idx >= 0) state.cfg.add.splice(idx, 1); else state.cfg.add.push(i); render(); return } if (type === 'qty') { state.cfg.qty = Math.max(1, state.cfg.qty + Number(args[0])); render(); return }     if (type === 'addcart') { const item = { pid: state.pid, ...state.cfg, add: [...state.cfg.add] }; const editIndex = state.edit; if (editIndex !== null) { state.cart[editIndex] = item; state.edit = null } else state.cart.push(item); send('cart_add', { item, editIndex }); state.screen = 'cart'; toast('Added to cart', 'Your coffee is in the order'); render(); return } if (type === 'cartqty') { const i = Number(args[0]), d = Number(args[1]); if (state.cart[i]) { state.cart[i].qty = Math.max(1, state.cart[i].qty + d); send('cart_update', { index: i, delta: d }); render() } return } if (type === 'remove') { const i = Number(args[0]); state.cart.splice(i, 1); send('cart_remove', { index: i }); render(); return } if (type === 'edit') { const i = Number(args[0]); state.edit = i; state.pid = state.cart[i].pid; state.cfg = { ...state.cart[i], add: [...state.cart[i].add] }; state.screen = 'detail'; render(); return } if (type === 'reviewhold') { state.screen = 'review'; render(); return } if (type === 'confirmhold') { confirmOrder(); return } if (type === 'retry') { state.screen = 'welcome'; render(); return } if (type === 'closemodal') { modalClose(); return } if (type === 'kitchen') { send('kitchen_update', { orderId: args[0] }); return } }
+    function confirmOrder() { if (!state.cart.length) return; const id = '#A' + String(++orderSeq).padStart(3, '0'); send('confirm_order'); state.order = { id, items: state.cart.map(x => ({ ...x })), total: total() }; state.screen = 'confirm'; render(); toast('✓ ORDER CONFIRMED', 'Your order has been sent to the bar') }
+    function toast(title, sub = '') { const t = $('#toast'); t.innerHTML = `${esc(title)}${sub ? `<small>${esc(sub)}</small>` : ''}`; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1800) }
+    function resetIdle() { clearTimeout(idleTimer); if (['welcome', 'confirm', 'ticket'].includes(state.screen)) return; idleTimer = setTimeout(() => modalOpen(), IDLE) } function modalOpen() { const root = $('#modalRoot'); root.innerHTML = renderTimeout(); bind(root) } function modalClose() { $('#modalRoot').innerHTML = '' }
+    function getDragProductTarget(element) {
+      if (!element) return null;
+      const productCard = element.closest?.('.product[data-product-id]');
+      if (productCard && ['welcome', 'cats', 'prods'].includes(state.screen)) {
+        const item = product(productCard.dataset.productId);
+        return item?.ok ? productCard : null;
+      }
+      const detailArt = element.closest?.('.detail-art[data-product-id]');
+      if (detailArt && state.screen === 'detail' && detailArt.dataset.productId === state.pid) {
+        const item = product(state.pid);
+        return item?.ok ? detailArt : null;
+      }
+      return null;
+    }
+    function getDragProductAtCursor() {
+      return getDragProductTarget(document.elementFromPoint(cursorPixelX, cursorPixelY));
+    }
+    function getProductImage(item) {
+      return item.imageUrl || item.image || '';
+    }
+    function updateGrabPreview(item, sourceElement, sequence) {
+      if (
+        !item ||
+        !sourceElement?.isConnected ||
+        sourceElement.dataset.productId !== String(item.id) ||
+        dragState?.sequence !== sequence
+      ) return;
+
+      dragPreviewElement.getAnimations().forEach(animation => animation.cancel());
+      dragPreviewElement.classList.remove('visible');
+      dragPreviewElement.style.opacity = '';
+      dragPreviewElement.style.transform = '';
+      dragPreviewElement.dataset.productId = String(item.id);
+      dragPreviewCardElement.replaceChildren();
+
+      const content = document.createElement('div');
+      content.className = 'drag-preview-card';
+      const image = document.createElement('img');
+      image.className = 'drag-preview-photo';
+      image.alt = item.n;
+      image.loading = 'eager';
+      image.dataset.fallback = item.image || '';
+      image.onerror = () => {
+        if (dragState?.sequence !== sequence || !image.isConnected) return;
+        const fallback = image.dataset.fallback;
+        if (fallback && !image.dataset.fallbackAttempted) {
+          image.dataset.fallbackAttempted = 'true';
+          image.src = fallback;
+        } else {
+          image.classList.add('image-error');
+          image.alt = `${item.n} image unavailable`;
+        }
+      };
+      image.onload = () => {
+        if (dragState?.sequence === sequence && image.isConnected) {
+          image.dataset.loadedFor = String(item.id);
+        }
+      };
+      const info = document.createElement('div');
+      const category = document.createElement('div');
+      category.className = 'drag-preview-category';
+      category.textContent = item.c === 'hot' ? 'ESPRESSO BAR'
+        : item.c === 'iced' ? 'COLD BREW BAR'
+        : item.c === 'non' ? 'HOUSE FAVORITE' : 'BAKERY';
+      const name = document.createElement('div');
+      name.className = 'drag-preview-name';
+      name.textContent = item.n;
+      const price = document.createElement('div');
+      price.className = 'drag-preview-price';
+      price.textContent = money(item.p);
+      info.append(category, name, price);
+      content.append(image, info);
+      dragPreviewCardElement.replaceChildren(content);
+      image.src = getProductImage(item);
+    }
+    function setDragCandidate(target) {
+      if (dragCandidate === target) return;
+      clearTimeout(dragCandidateTimer);
+      dragCandidateTimer = null;
+      dragCandidate = target;
+      if (!target) {
+        if (interactionState === 'GRAB_ARMING') {
+          setInteractionState(hoverTarget ? 'POINTING' : 'IDLE');
+        }
+        return;
+      }
+      if (interactionState !== 'GRAB_ARMING') setInteractionState('GRAB_ARMING');
+      dragCandidateTimer = setTimeout(() => {
+        dragCandidateTimer = null;
+        if (lastGesture !== 'PINCH' || interactionState !== 'GRAB_ARMING' || dragState) return;
+        if (target?.isConnected) startProductDrag(target);
+      }, DRAG_START_DELAY);
+    }
+    function startProductDrag(source) {
+      const productId = source.dataset.productId;
+      const item = product(productId);
+      if (!item?.ok || !source.isConnected || interactionState !== 'GRAB_ARMING' || lastGesture !== 'PINCH') return;
+      const fromDetail = state.screen === 'detail';
+      const rect = source.getBoundingClientRect();
+      clearDragCandidate();
+      const sequence = ++grabSequence;
+      const config = fromDetail
+        ? { ...state.cfg, add: [...state.cfg.add] }
+        : { size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 };
+      dragState = {
+        source,
+        product: item,
+        sequence,
+        item: { pid: productId, ...config },
+        originX: rect.left + rect.width / 2,
+        originY: rect.top + rect.height / 2,
+        x: cursorPixelX,
+        y: cursorPixelY,
+        targetX: cursorPixelX,
+        targetY: cursorPixelY,
+        overCart: false,
+      };
+      lastHoveredTarget = null;
+      setInteractionState('GRABBED');
+      soundManager.play('grab');
+      source.classList.add('dragging-source');
+      if (hoverTarget) hoverTarget.classList.remove('pinch-ready');
+      hoverTarget = null;
+      clearDwellSelection();
+      cursorElement.classList.remove('hover');
+      cursorElement.classList.add('dragging');
+      cursorLabelElement.textContent = 'DRAG TO CART';
+      updateGrabPreview(item, source, sequence);
+      dragPreviewStateElement.textContent = `✦ HOLDING ${item.n.toUpperCase()}`;
+      dragPreviewElement.classList.add('visible');
+      dragState.previewWidth = dragPreviewElement.offsetWidth;
+      dragState.previewHeight = dragPreviewElement.offsetHeight;
+      floatingCartElement.classList.add('drag-active');
+      refreshCartBounds();
+      floatingCartElement.setAttribute('aria-label', `Drop ${item.n} into cart`);
+      cartDropHintElement.textContent = `DROP ${item.n.toUpperCase()} HERE · RELEASE TO ADD`;
+      dragPreviewElement.style.opacity = '1';
+      positionDragPreview(cursorPixelX, cursorPixelY);
+      updateDragDropTarget(cursorPixelX, cursorPixelY);
+    }
+    function positionDragPreview(x, y) {
+      if (!dragState) return;
+      const margin = 12;
+      const width = dragState.previewWidth;
+      const height = dragState.previewHeight;
+      const gap = 28;
+      const left = x + gap + width <= window.innerWidth - margin
+        ? x + gap
+        : x - gap - width;
+      const top = y - gap - height >= margin
+        ? y - gap - height
+        : y + gap;
+      const clampedLeft = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+      const clampedTop = Math.max(margin, Math.min(top, window.innerHeight - height - margin));
+      dragPreviewElement.style.transform = `translate3d(${clampedLeft}px, ${clampedTop}px, 0)`;
+    }
+    function updateDragDropTarget(x, y) {
+      if (!isDragActive()) return;
+      const overCart = x >= cartRect.left && x <= cartRect.right && y >= cartRect.top && y <= cartRect.bottom;
+      dragState.targetX = x;
+      dragState.targetY = y;
+      const targetChanged = dragState.overCart !== overCart;
+      dragState.overCart = overCart;
+      if (targetChanged) {
+        floatingCartElement.classList.toggle('drop-target', overCart);
+        floatingCartElement.classList.toggle('drop-ready', overCart);
+        cartDropHintElement.textContent = overCart ? '✦ RELEASE TO ADD' : 'MOVE HERE · RELEASE TO ADD';
+        dragPreviewStateElement.textContent = overCart ? '✦ READY TO DROP' : '✦ HOLDING';
+        cursorLabelElement.textContent = overCart ? 'RELEASE TO ADD' : 'DRAG TO CART';
+      }
+      if (interactionState === 'GRABBED') {
+        setInteractionState(overCart ? 'OVER_CART' : 'DRAGGING');
+      } else if (interactionState !== (overCart ? 'OVER_CART' : 'DRAGGING')) {
+        setInteractionState(overCart ? 'OVER_CART' : 'DRAGGING');
+      }
+    }
+    function clearDragCandidate() {
+      clearTimeout(dragCandidateTimer);
+      dragCandidateTimer = null;
+      dragCandidate = null;
+      if (interactionState === 'GRAB_ARMING') {
+        setInteractionState(hoverTarget ? 'POINTING' : 'IDLE');
+      }
+    }
+    function clearProductDrag() {
+      const current = dragState;
+      grabSequence++;
+      dragPreviewElement.getAnimations().forEach(animation => animation.cancel());
+      if (current?.source?.isConnected) current.source.classList.remove('dragging-source', 'pinch-ready');
+      floatingCartElement.classList.remove('drag-active', 'drop-target', 'drop-ready');
+      floatingCartElement.setAttribute('aria-label', 'Open cart');
+      cartDropHintElement.textContent = '✦ DROP TO ADD';
+      dragPreviewElement.classList.remove('visible');
+      dragPreviewElement.style.opacity = '';
+      dragPreviewElement.style.transform = '';
+      dragPreviewElement.removeAttribute('data-product-id');
+      dragPreviewCardElement.replaceChildren();
+      dragPreviewStateElement.textContent = '✦ READY TO GRAB';
+      cursorLabelElement.textContent = '';
+      cursorElement.classList.remove('dragging');
+      if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+      dragState = null;
+      clearTimeout(dragLostTimer);
+      dragLostTimer = null;
+      refreshCartBounds();
+    }
+    function finishProductDrag(drop) {
+      if (!isDragActive()) return;
+      const current = dragState;
+      updateDragDropTarget(cursorPixelX, cursorPixelY);
+      const successfulDrop = Boolean(
+        drop &&
+        (current.overCart || (
+          cursorPixelX >= cartRect.left - 20 &&
+          cursorPixelX <= cartRect.right + 20 &&
+          cursorPixelY >= cartRect.top - 20 &&
+          cursorPixelY <= cartRect.bottom + 20
+        ))
+      );
+      if (!successfulDrop) soundManager.play('cancel', current.sequence);
+      setInteractionState(successfulDrop ? 'DROP_PROCESSING' : 'CANCEL_PROCESSING');
+      dragPreviewStateElement.textContent = successfulDrop ? '✦ ADDING TO CART' : '✦ RETURNING';
+      clearProductDragTimers();
+      const preview = dragPreviewElement;
+      const destination = successfulDrop
+        ? cartRect
+        : { left: current.originX, top: current.originY, width: 0, height: 0 };
+      const targetX = destination.left + destination.width / 2 - current.previewWidth / 2;
+      const targetY = destination.top + destination.height / 2 - current.previewHeight / 2;
+      const from = preview.style.transform;
+      const animation = preview.animate([
+        { transform: from, opacity: 1 },
+        { transform: `translate3d(${targetX}px, ${targetY}px, 0) scale(${successfulDrop ? .2 : .72})`, opacity: 0 },
+      ], { duration: successfulDrop ? 400 : 400, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+      animation.onfinish = () => {
+        if (dragState !== current) return;
+        const item = current.item;
+        const grabbedProduct = current.product;
+        clearProductDrag();
+        if (successfulDrop) {
+          state.pid = item.pid;
+          state.cfg = { size: item.size, temp: item.temp, sugar: item.sugar, milk: item.milk, add: [...item.add], qty: item.qty };
+          const cartItem = { pid: item.pid, ...state.cfg, add: [...state.cfg.add] };
+          state.cart.push(cartItem);
+          send('cart_add', { item: cartItem, editIndex: state.edit ?? null });
+          const countEl = $('#cartCount');
+          if (countEl) countEl.textContent = String(count());
+          const cart = $('#floatingCart');
+          cart.classList.remove('cart-bump');
+          void cart.offsetWidth;
+          cart.classList.add('cart-bump');
+          toast(`✓ ${grabbedProduct.n} added`, 'Added to order · tap cart to checkout');
+          setInteractionState('DROP_SUCCESS');
+        } else {
+          toast('Grab cancelled', 'Release over the cart to add this drink');
+          setInteractionState('CANCELLED');
+        }
+        clearTimeout(terminalStateTimer);
+        terminalStateTimer = setTimeout(() => {
+          if (interactionState === 'DROP_SUCCESS' || interactionState === 'CANCELLED') {
+            setInteractionState('IDLE');
+          }
+        }, 400);
+      };
+    }
+    function clearProductDragTimers() {
+      clearTimeout(dragLostTimer);
+      dragLostTimer = null;
+      clearTimeout(pendingPinchReleaseTimer);
+      pendingPinchReleaseTimer = null;
+    }
+    function moveCursor(x, y) {
+      setCursorTarget(x, y);
+    }
+    function updateCursorHitTarget() {
+      const isMouseActive = performance.now() - lastMouseTime < 3500;
+      if ((!trackingActive && !isMouseActive) || isDragActive() || interactionState === 'SCROLLING') return;
+      const moved = Math.hypot(cursorPixelX - cursorLastHitX, cursorPixelY - cursorLastHitY);
+      if (moved < 1.5 && !dwellTarget && hoverTarget?.isConnected) return;
+      cursorLastHitX = cursorPixelX;
+      cursorLastHitY = cursorPixelY;
+
+      let isWithinDwellMargin = false;
+      if (dwellTarget?.isConnected) {
+        const rect = dwellTarget.getBoundingClientRect();
+        if (
+          cursorPixelX >= rect.left - DWELL_TARGET_MARGIN &&
+          cursorPixelX <= rect.right + DWELL_TARGET_MARGIN &&
+          cursorPixelY >= rect.top - DWELL_TARGET_MARGIN &&
+          cursorPixelY <= rect.bottom + DWELL_TARGET_MARGIN
+        ) {
+          isWithinDwellMargin = true;
+        }
+      }
+
+      const element = document.elementFromPoint(cursorPixelX, cursorPixelY);
+      if (element?.closest?.('#cameraPreview')) {
+        if (!cameraPreviewCursorHover) moveCameraPreviewToNextCorner();
+        cameraPreviewCursorHover = true;
+        return;
+      }
+      cameraPreviewCursorHover = false;
+      const target = element?.closest?.('[data-action], #floatingCart, input:not([disabled]), select:not([disabled]), textarea:not([disabled]), .detail-art[data-product-id], .product[data-product-id]');
+      if (target) {
+        if (target === dwellTarget || (isWithinDwellMargin && dwellTarget?.contains?.(target))) {
+          clearTimeout(dwellExitTimer);
+          dwellExitTimer = null;
+          if (hoverTarget !== dwellTarget) hoverTarget = dwellTarget;
+          return;
+        }
+        clearTimeout(dwellExitTimer);
+        dwellExitTimer = null;
+        cursorHover(target, true);
+        return;
+      }
+      if (isWithinDwellMargin && dwellTarget) {
+        clearTimeout(dwellExitTimer);
+        dwellExitTimer = null;
+        return;
+      }
+      if (hoverTarget) {
+        cursorHover(hoverTarget, false);
+      } else {
+        if (dwellTriggeredKey) dwellTriggeredKey = null;
+        cursorElement.classList.remove('hover');
+        clearDwellSelection();
+        if (interactionState === 'POINTING') setInteractionState('IDLE');
+      }
+    }
+    function beginGestureScroll() {
+      gestureScrollTarget = getCursorScrollTarget();
+      if (!gestureScrollTarget) return;
+      scrollOriginalBehavior = gestureScrollTarget.style.scrollBehavior;
+      gestureScrollTarget.style.scrollBehavior = 'auto';
+      scrollLastY = cursorPixelY;
+      scrollStartTop = gestureScrollTarget.scrollTop;
+      scrollCurrentTop = scrollStartTop;
+      scrollTargetTop = scrollStartTop;
+      scrollMaxTop = Math.max(0, gestureScrollTarget.scrollHeight - gestureScrollTarget.clientHeight);
+      scrollArmed = false;
+      scrollVelocity = 0;
+      scrollLastTargetTop = scrollStartTop;
+      scrollLastUpdate = performance.now();
+    }
+    function endGestureScroll() {
+      if (gestureScrollTarget) gestureScrollTarget.style.scrollBehavior = scrollOriginalBehavior;
+      gestureScrollTarget = null;
+      if (interactionState === 'SCROLLING') setInteractionState('IDLE');
+      cursorElement.classList.remove('scrolling');
+    }
+    function updateGestureScroll(timestamp, deltaTime) {
+      if (interactionState === 'SCROLLING' && gestureScrollTarget?.isConnected) {
+        const dy = cursorPixelY - scrollLastY;
+        scrollLastY = cursorPixelY;
+        if (Math.abs(dy) > 1.2) {
+          scrollTargetTop = Math.max(0, Math.min(
+            scrollMaxTop,
+            scrollTargetTop + dy * SCROLL_SENSITIVITY,
+          ));
+          const elapsed = Math.max(.001, (timestamp - scrollLastUpdate) / 1000);
+          scrollVelocity = Math.max(-1800, Math.min(
+            1800,
+            (dy * SCROLL_SENSITIVITY) / elapsed,
+          ));
+          scrollLastTargetTop = scrollTargetTop;
+          scrollLastUpdate = timestamp;
+        }
+      } else if (!gestureScrollTarget && Math.abs(scrollVelocity) > 8) {
+        scrollTargetTop = Math.max(0, Math.min(
+          scrollMaxTop,
+          scrollCurrentTop + scrollVelocity * deltaTime,
+        ));
+        if (scrollTargetTop <= 0 || scrollTargetTop >= scrollMaxTop) scrollVelocity = 0;
+        else scrollVelocity *= Math.exp(-SCROLL_FRICTION * deltaTime);
+      } else if (!gestureScrollTarget) {
+        scrollVelocity = 0;
+      }
+      if (gestureScrollTarget?.isConnected) {
+        const blend = 1 - Math.exp(-SCROLL_EASE * deltaTime);
+        scrollCurrentTop += (scrollTargetTop - scrollCurrentTop) * blend;
+        if (Math.abs(gestureScrollTarget.scrollTop - scrollCurrentTop) > .5) {
+          gestureScrollTarget.scrollTop = scrollCurrentTop;
+        }
+      }
+    }
+    function updateHoldAndDwell(timestamp) {
+      if (dwellTarget && interactionState === 'DWELLING') {
+        const duration = dwellTarget.dataset.hold ? 1200 : DWELL_DURATION;
+        const pct = Math.min(1, Math.max(0, (timestamp - dwellStart) / duration));
+        if (holdProgressElement) holdProgressElement.style.strokeDashoffset = String(289 * (1 - pct));
+        const btnProgress = dwellTarget.querySelector?.('.progress');
+        if (btnProgress) btnProgress.style.width = `${Math.round(pct * 100)}%`;
+
+        if (pct >= 1) {
+          const selectedTarget = dwellTarget;
+          dwellTriggeredKey = getDwellTargetKey(selectedTarget);
+          clearDwellSelection();
+          cursorElement.classList.add('dwell-complete');
+          setTimeout(() => {
+            cursorElement.classList.remove('dwell-complete');
+            if (!dwellTarget && holdProgressElement) holdProgressElement.style.strokeDashoffset = '289';
+          }, 240);
+          if (selectedTarget && selectedTarget.isConnected && !selectedTarget.disabled) {
+            selectedTarget.click();
+            if (typeof selectedTarget.focus === 'function' && ['INPUT', 'TEXTAREA'].includes(selectedTarget.tagName)) {
+              selectedTarget.focus();
+            }
+          }
+        }
+      }
+    }
+    function animationLoop(timestamp) {
+      const deltaTime = lastAnimationTime
+        ? Math.min(.05, Math.max(.001, (timestamp - lastAnimationTime) / 1000))
+        : 1 / 60;
+      lastAnimationTime = timestamp;
+      fpsWindowFrames += 1;
+      if (!fpsWindowStart) fpsWindowStart = timestamp;
+      if (timestamp - fpsWindowStart >= 500) {
+        measuredFps = Math.round(fpsWindowFrames * 1000 / (timestamp - fpsWindowStart));
+        fpsWindowFrames = 0;
+        fpsWindowStart = timestamp;
+        if (PERFORMANCE_DEBUG) updateGestureDebug();
+      }
+
+      const dx = cursorTargetX - cursorPixelX;
+      const dy = cursorTargetY - cursorPixelY;
+      const distance = Math.hypot(dx, dy);
+      if (distance >= 1.3) {
+        const rate = distance / deltaTime < 240 ? 15 : 25;
+        const blend = 1 - Math.exp(-rate * deltaTime);
+        cursorPixelX += dx * blend;
+        cursorPixelY += dy * blend;
+      }
+      if (!cursorRendered || distance >= 1.3) {
+        cursorElement.style.transform = `translate3d(${cursorPixelX}px, ${cursorPixelY}px, 0) translate(-50%, -50%)`;
+        cursorRendered = true;
+      }
+      updateCursorHitTarget();
+
+      if (isDragActive()) {
+        if (interactionState === 'GRABBED') setInteractionState('DRAGGING');
+        const dragBlend = 1 - Math.exp(-23 * deltaTime);
+        dragState.x += (cursorPixelX - dragState.x) * dragBlend;
+        dragState.y += (cursorPixelY - dragState.y) * dragBlend;
+        positionDragPreview(dragState.x, dragState.y);
+        updateDragDropTarget(cursorPixelX, cursorPixelY);
+      }
+
+      updateGestureScroll(timestamp, deltaTime);
+      updateHoldAndDwell(timestamp);
+      pendingFrameHandle = requestAnimationFrame(animationLoop);
+    }
+    function send(type, payload = {}) { if (socket?.readyState === 1) socket.send(JSON.stringify({ type, ...payload })) }
+    function connect() {
+      const host = location.hostname || '127.0.0.1';
+      try {
+        socket = new WebSocket(`ws://${host}:8765`);
+      } catch {
+        return;
+      }
+      socket.onopen = () => {
+        $('#backend').classList.remove('status');
+        $('#backend').className = 'status';
+        $('#backend span').textContent = 'PYTHON CONNECTED';
+        if (cameraPreviewImageElement.dataset.error === 'true') loadCameraPreview();
+        send('hello');
+      };
+      socket.onclose = () => {
+        $('#backend').className = 'status err';
+        $('#backend span').textContent = 'PYTHON OFFLINE';
+        if (isDragActive()) finishProductDrag(false);
+        setTimeout(connect, 1500);
+      };
+      socket.onerror = () => {
+        $('#backend').className = 'status err';
+        $('#backend span').textContent = 'PYTHON ERROR';
+      };
+      socket.onmessage = e => {
+        let message;
+        try {
+          message = JSON.parse(e.data);
+        } catch {
+          return;
+        }
+        if (message.type === 'state') {
+          if (message.cursor && (message.handDetected || !dragState)) {
+            moveCursor(message.cursor.x, message.cursor.y);
+          }
+          const gesture = message.gesture || 'NONE';
+          updateVisionStatus(message);
+          handleGesture(
+            gesture,
+            message.handDetected,
+            message.gestureDetails || '',
+            message.gestureCandidate || 'NONE',
+          );
+          updateGestureDebug(gesture, Boolean(message.handDetected), message.gestureDetails || '');
+          if (message.cart) {
+            const cartChanged = message.cart.length !== state.cart.length || message.cart.some((item, index) => {
+              const current = state.cart[index];
+              return !current || current.pid !== item.pid || current.qty !== item.qty ||
+                current.size !== item.size || current.temp !== item.temp ||
+                current.sugar !== item.sugar || current.milk !== item.milk ||
+                current.add?.length !== item.add?.length ||
+                current.add?.some((value, addIndex) => value !== item.add?.[addIndex]);
+            });
+            if (cartChanged) {
+              state.cart = message.cart.map(item => ({ ...item, add: [...(item.add || [])] }));
+              const nextCount = String(count());
+              const countElement = $('#cartCount');
+              if (countElement.textContent !== nextCount) countElement.textContent = nextCount;
+            }
+          }
+        }
+        if (message.type === 'cart_sync') {
+          state.cart = message.cart || [];
+          if (state.screen === 'cart' || state.screen === 'review') {
+            render();
+          } else {
+            const nextCount = String(count());
+            const countElement = $('#cartCount');
+            if (countElement && countElement.textContent !== nextCount) countElement.textContent = nextCount;
+            const menuCountElement = $('.menu-cart-btn b');
+            if (menuCountElement && menuCountElement.textContent !== nextCount) menuCountElement.textContent = nextCount;
+            const headerCartButton = $('.header-cart-btn');
+            if (headerCartButton) headerCartButton.textContent = `🛒 Cart (${nextCount})`;
+          }
+        }
+        if (message.type === 'order_created') {
+          state.order = message.order;
+          const orderId = String(message.order?.id || message.order?.order_id || '');
+          if (orderId) soundManager.play('success', orderId);
+          state.screen = 'confirm';
+          render();
+        }
+        if (message.type === 'error') toast('System message', message.message || 'Unknown error');
+      };
+    }
+    function handleGesture(gesture, handDetected = true, details = '', candidate = 'NONE') {
+      const g = gesture || 'NONE';
+      const isMouseActive = performance.now() - lastMouseTime < 3500;
+      trackingActive = Boolean((handDetected && g !== 'FIST') || isMouseActive);
+      lastGestureDetails = details;
+      cursorElement.classList.toggle('inactive', !trackingActive);
+
+      if (!handDetected) {
+        if (!isMouseActive) {
+          clearDragCandidate();
+          if (interactionState === 'SCROLLING') {
+            endGestureScroll();
+          }
+          if (isDragActive() && !dragLostTimer) {
+            dragLostTimer = setTimeout(() => {
+              dragLostTimer = null;
+              if (isDragActive()) finishProductDrag(false);
+            }, DRAG_LOST_TIMEOUT);
+          }
+          if (!dragState && interactionState !== 'SCROLLING') {
+            if (!handLostDwellTimer && interactionState === 'DWELLING') {
+              handLostDwellTimer = setTimeout(() => {
+                handLostDwellTimer = null;
+                if (!trackingActive) {
+                  if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+                  hoverTarget = null;
+                  updateProductHoverSound(null);
+                  $('#cursor').classList.remove('hover');
+                  clearDwellSelection();
+                  setInteractionState('IDLE');
+                }
+              }, 350);
+            } else if (interactionState !== 'DWELLING') {
+              if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+              hoverTarget = null;
+              updateProductHoverSound(null);
+              $('#cursor').classList.remove('hover');
+              clearDwellSelection();
+              setInteractionState('IDLE');
+            }
+          }
+        }
+        lastGesture = g;
+        updateGestureDebug(g, false);
+        return;
+      }
+      clearTimeout(dragLostTimer);
+      dragLostTimer = null;
+      clearTimeout(handLostDwellTimer);
+      handLostDwellTimer = null;
+      if (['DROP_PROCESSING', 'CANCEL_PROCESSING', 'DROP_SUCCESS', 'CANCELLED'].includes(interactionState)) {
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (isDragActive()) {
+        if (g === 'FIST') {
+          finishProductDrag(false);
+          lastGesture = g;
+          return;
+        }
+        if (g === 'PINCH') {
+          clearTimeout(pendingPinchReleaseTimer);
+          pendingPinchReleaseTimer = null;
+          lastGesture = 'PINCH';
+          return;
+        }
+        if (candidate === 'PINCH') {
+          return;
+        }
+        if (!pendingPinchReleaseTimer) {
+          pendingPinchReleaseTimer = setTimeout(() => {
+            pendingPinchReleaseTimer = null;
+            if (isDragActive()) {
+              finishProductDrag(dragState.overCart);
+            }
+          }, 80);
+        }
+        lastGesture = g;
+        return;
+      }
+
+      if (g === 'RELAX') {
+        if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+        hoverTarget = null;
+        clearDwellSelection();
+        clearDragCandidate();
+        updateProductHoverSound(null);
+        cursorElement.classList.remove('hover');
+        cursorLabelElement.textContent = 'RELAX · HOLD PAUSED';
+        if (interactionState === 'POINTING' || interactionState === 'DWELLING') {
+          setInteractionState('IDLE');
+        }
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (g !== 'PINCH') clearDragCandidate();
+
+      if (g === 'TWO_FINGER_SCROLL') {
+        clearTimeout(scrollExitTimer);
+        scrollExitTimer = null;
+        if (interactionState !== 'SCROLLING') {
+          if (hoverTarget) hoverTarget.classList.remove('pinch-ready');
+          hoverTarget = null;
+          updateProductHoverSound(null);
+          clearDwellSelection();
+          cursorElement.classList.remove('hover');
+          beginGestureScroll();
+          setInteractionState('SCROLLING');
+        }
+        cursorElement.classList.add('scrolling');
+        cursorLabelElement.textContent = 'SCROLL MODE';
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (interactionState === 'SCROLLING') {
+        if (!scrollExitTimer) {
+          scrollExitTimer = setTimeout(() => {
+            scrollExitTimer = null;
+            if (interactionState === 'SCROLLING' && lastGesture !== 'TWO_FINGER_SCROLL') {
+              endGestureScroll();
+            }
+          }, 140);
+        }
+      }
+
+      if (g === 'PINCH') {
+        clearDwellSelection();
+        if (hoverTarget) updateProductHoverSound(null);
+        const target = getDragProductAtCursor();
+        setDragCandidate(target);
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (g === 'FIST') {
+        if (hoverTarget?.isConnected) hoverTarget.classList.remove('pinch-ready');
+        hoverTarget = null;
+        clearDwellSelection();
+        updateProductHoverSound(null);
+        cursorElement.classList.remove('hover');
+        setInteractionState('IDLE');
+        if (g !== lastGesture) action('back');
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (g === 'POINT') {
+        clearTimeout(dwellGraceTimer);
+        dwellGraceTimer = null;
+        cursorElement.classList.remove('scrolling');
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      if (g === 'NONE') {
+        cursorElement.classList.remove('scrolling');
+        lastGesture = g;
+        updateGestureDebug(g, true);
+        return;
+      }
+
+      cursorElement.classList.remove('scrolling');
+      lastGesture = g;
+      updateGestureDebug(g, true);
+    }
+    function getCursorScrollTarget() { let element = document.elementFromPoint(cursorPixelX, cursorPixelY); while (element && element !== document.body) { const style = getComputedStyle(element); if (/(auto|scroll)/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 1) return element; element = element.parentElement; } return document.querySelector('#content .detail-copy') || document.querySelector('#content .screen') }
+    function scrollScreen(direction) { const screen = getCursorScrollTarget(); if (!screen) return; const maxScroll = screen.scrollHeight - screen.clientHeight; if (maxScroll <= 1) return; screen.scrollBy({ top: direction * Math.max(180, screen.clientHeight * .65), behavior: 'smooth' }) }
+    function navigateTargets(delta) { const targets = [...document.querySelectorAll('[data-action]')].filter(x => !x.disabled); if (!targets.length) return; state.selectedIndex = (state.selectedIndex + delta + targets.length) % targets.length; targets.forEach(x => x.classList.remove('active')); targets[state.selectedIndex].classList.add('active'); targets[state.selectedIndex].scrollIntoView({ block: 'nearest', inline: 'nearest' }); toast(delta > 0 ? '→ NEXT' : '← PREVIOUS') }
+    window.addEventListener('mousemove', e => {
+      lastMouseTime = performance.now();
+      trackingActive = true;
+      cursorElement.classList.remove('inactive');
+      setCursorTarget((e.clientX - kioskRect.left) / kioskRect.width * 1280, (e.clientY - kioskRect.top) / kioskRect.height * 720);
+      const target = e.target?.closest?.('[data-action], #floatingCart, input:not([disabled]), select:not([disabled]), textarea:not([disabled]), .detail-art[data-product-id], .product[data-product-id]');
+      if (target) cursorHover(target, true);
+      else if (hoverTarget) cursorHover(hoverTarget, false);
+      else dwellTriggeredKey = null;
+    });
+    window.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.altKey && e.shiftKey && e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        fetch('/_shutdown', { method: 'POST' }).catch(error => {
+          console.warn('[SmartCoffee] Could not request graceful shutdown:', error);
+        });
+        return;
+      }
+      if (e.key === 'ArrowRight') navigateTargets(1);
+      else if (e.key === 'ArrowLeft') navigateTargets(-1);
+      else if (e.key === 'Enter') { const t = document.querySelector('.active[data-action]'); if (t) t.click(); }
+      else if (e.key.toLowerCase() === 'f') handleGesture('FIST');
+      else if (e.key.toLowerCase() === 'c') action('go:cart');
+      else if (e.key.toLowerCase() === 'r') action('reset');
+    });
+    $('#floatingCart').addEventListener('click', () => action('go:cart'));
+    render(); connect(); pendingFrameHandle = requestAnimationFrame(animationLoop);
+  </script>
+</body>
+
+</html>
