@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Smart Coffee Ordering</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --esp: #3A1F14;
+            --deep: #4A281A;
+            --cof: #6B3E26;
+            --car: #A86635;
+            --gold: #C98B4A;
+            --cream: #F7EBDD;
+            --lc: #FFF8F0;
+            --beige: #EAD8C5;
+            --ok: #2E9B57;
+            --warn: #D89A32;
+            --err: #C94B45;
+            --info: #4C87C7
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: #1d0f09;
+            font-family: Poppins, Inter, system-ui, sans-serif;
+            color: var(--esp);
+            overflow: hidden;
+            cursor: none
+        }
+
+        #wrap {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px
+        }
+
+        #fit {
+            position: relative
+        }
+
+        #stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1280px;
+            height: 720px;
+            background: var(--cream);
+            transform-origin: 0 0;
+            overflow: hidden;
+            border-radius: 18px
+        }
+
+        .top {
+            height: 84px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            background: var(--esp);
+            color: var(--cream)
+        }
+
+        .top h1 {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: .5px
+        }
+
+        .top .l,
+        .top .r {
+            width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .top .r {
+            justify-content: flex-end
+        }
+
+        .main {
+            height: 580px;
+            padding: 22px 56px;
+            position: relative;
+            animation: in .28s ease
+        }
+
+        @keyframes in {
+            from {
+                opacity: 0;
+                transform: translateX(24px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .bot {
+            height: 56px;
+            background: var(--deep);
+            color: var(--beige);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 19px
+        }
+
+        .btn {
+            font: 600 22px Poppins;
+            height: 68px;
+            padding: 0 36px;
+            border-radius: 34px;
+            border: 3px solid transparent;
+            background: var(--car);
+            color: var(--esp);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: .15s;
+            position: relative;
+            white-space: nowrap
+        }
+
+        .btn.sec {
+            background: var(--lc);
+            border-color: var(--cof);
+            color: var(--esp)
+        }
+
+        .btn.sm {
+            height: 60px;
+            font-size: 20px;
+            padding: 0 26px
+        }
+
+        .btn.hold {
+            background: var(--esp);
+            color: var(--cream);
+            border-color: var(--gold);
+            overflow: hidden
+        }
+
+        .btn.hold i {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: var(--car);
+            opacity: .8
+        }
+
+        .btn.hold span {
+            position: relative
+        }
+
+        .btn[disabled] {
+            opacity: .45
+        }
+
+        .hov {
+            transform: scale(1.04);
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 5px rgba(201, 139, 74, .35), 0 10px 24px rgba(58, 31, 20, .28)
+        }
+
+        .hov::after {
+            content: attr(data-h);
+            position: absolute;
+            bottom: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--esp);
+            color: var(--gold);
+            padding: 2px 10px;
+            border-radius: 10px;
+            white-space: nowrap;
+            z-index: 5
+        }
+
+        .card {
+            background: var(--lc);
+            border: 3px solid var(--beige);
+            border-radius: 26px;
+            padding: 20px;
+            position: relative;
+            transition: .15s;
+            text-align: center
+        }
+
+        .card.sel {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201, 139, 74, .3)
+        }
+
+        .card.off {
+            opacity: .5;
+            filter: grayscale(.8)
+        }
+
+        .img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #fff, var(--beige));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 66px;
+            margin: 0 auto 10px
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px
+        }
+
+        .g2 {
+            grid-template-columns: repeat(2, 1fr)
+        }
+
+        .g4 {
+            grid-template-columns: repeat(4, 1fr)
+        }
+
+        h2 {
+            font-size: 30px;
+            font-weight: 700
+        }
+
+        .sub {
+            font-size: 19px;
+            color: var(--cof)
+        }
+
+        .price {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--car)
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 14px;
+            background: var(--beige);
+            color: var(--esp)
+        }
+
+        .b-ok {
+            background: #d6efe0;
+            color: #1c6b3a
+        }
+
+        .b-off {
+            background: #ddd;
+            color: #555
+        }
+
+        .b-w {
+            background: #f8e6c4;
+            color: #8a5a0c
+        }
+
+        .b-i {
+            background: #d7e6f6;
+            color: #2a5a92
+        }
+
+        .opt {
+            font: 600 18px Poppins;
+            padding: 10px 20px;
+            border-radius: 24px;
+            border: 3px solid var(--beige);
+            background: var(--lc);
+            color: var(--esp);
+            margin: 0 8px 8px 0;
+            position: relative;
+            transition: .15s
+        }
+
+        .opt.on {
+            background: var(--esp);
+            color: var(--cream);
+            border-color: var(--esp)
+        }
+
+        .lab {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--cof);
+            margin: 8px 0 6px
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            align-items: center
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--lc);
+            border: 3px solid var(--beige);
+            border-radius: 22px;
+            padding: 14px 22px;
+            margin-bottom: 12px
+        }
+
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 30px;
+            font-weight: 700
+        }
+
+        .qty b {
+            width: 46px;
+            text-align: center
+        }
+
+        .qb {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--esp);
+            color: var(--cream);
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 3px solid transparent
+        }
+
+        .modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(58, 31, 20, .78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50
+        }
+
+        .mbox {
+            background: var(--lc);
+            border-radius: 30px;
+            padding: 36px 48px;
+            text-align: center;
+            width: 640px;
+            border: 4px solid var(--gold)
+        }
+
+        .mbox h2 {
+            margin-bottom: 8px
+        }
+
+        .mbox .row {
+            justify-content: center;
+            margin-top: 22px
+        }
+
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            gap: 14px
+        }
+
+        .full {
+            position: absolute;
+            inset: 0;
+            background: var(--cream);
+            z-index: 40
+        }
+
+        #toast {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--esp);
+            color: var(--cream);
+            border: 3px solid var(--gold);
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 600;
+            z-index: 90;
+            opacity: 0;
+            transition: .2s;
+            pointer-events: none;
+            text-align: center
+        }
+
+        #toast.show {
+            opacity: 1
+        }
+
+        #toast small {
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--beige)
+        }
+
+        .cs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: .5px
+        }
+
+        .cs b {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--ok)
+        }
+
+        .cs.w b {
+            background: transparent;
+            border: 2px solid var(--beige)
+        }
+
+        .cs.h b {
+            background: var(--gold);
+            box-shadow: 0 0 8px var(--gold)
+        }
+
+        .cs.e b {
+            background: var(--err)
+        }
+
+        #cur {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 54px;
+            height: 54px;
+            margin: -27px 0 0 -27px;
+            z-index: 999;
+            pointer-events: none;
+            transition: transform .05s
+        }
+
+        #cur .o {
+            position: absolute;
+            inset: 0;
+            border: 4px solid var(--gold);
+            border-radius: 50%;
+            background: rgba(201, 139, 74, .18);
+            box-shadow: 0 0 16px rgba(201, 139, 74, .7), 0 2px 8px rgba(0, 0, 0, .4);
+            transition: .15s
+        }
+
+        #cur .d {
+            position: absolute;
+            left: 21px;
+            top: 21px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--esp);
+            border: 2px solid #fff
+        }
+
+        #cur.hv .o {
+            transform: scale(1.25);
+            background: rgba(201, 139, 74, .35)
+        }
+
+        #cur.pn .d {
+            transform: scale(2.4);
+            background: var(--car)
+        }
+
+        #cur.pn .o {
+            transform: scale(.8)
+        }
+
+        #cur svg {
+            position: absolute;
+            inset: -8px;
+            width: 70px;
+            height: 70px;
+            transform: rotate(-90deg);
+            display: none
+        }
+
+        #cur.hd svg {
+            display: block
+        }
+
+        #cur .t {
+            position: absolute;
+            top: 62px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--esp);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            display: none;
+            white-space: nowrap
+        }
+
+        #cur.hd .t {
+            display: block
+        }
+
+        #dev {
+            display: none;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1280px;
+            cursor: default
+        }
+
+        #dev button {
+            font: 500 12px Poppins;
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 0;
+            background: #3a2a22;
+            color: #e8d3bd;
+            cursor: pointer
+        }
+
+        #dev button:hover {
+            background: var(--car)
+        }
+
+        #cam {
+            position: absolute;
+            right: 20px;
+            bottom: 76px;
+            width: 200px;
+            height: 130px;
+            background: #1d0f09;
+            border: 3px solid var(--gold);
+            border-radius: 14px;
+            z-index: 60;
+            display: none;
+            overflow: hidden;
+            color: #fff;
+            font-size: 11px
+        }
+
+        .recpt {
+            background: #fff;
+            width: 380px;
+            padding: 22px 28px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            box-shadow: 0 8px 24px rgba(58, 31, 20, .3);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 95% 100%, 90% calc(100% - 10px), 85% 100%, 80% calc(100% - 10px), 75% 100%, 70% calc(100% - 10px), 65% 100%, 60% calc(100% - 10px), 55% 100%, 50% calc(100% - 10px), 45% 100%, 40% calc(100% - 10px), 35% 100%, 30% calc(100% - 10px), 25% 100%, 20% calc(100% - 10px), 15% 100%, 10% calc(100% - 10px), 5% 100%, 0 calc(100% - 10px))
+        }
+
+        .recpt hr {
+            border: 0;
+            border-top: 2px dashed #bbb;
+            margin: 10px 0
+        }
+
+        .recpt .ln {
+            display: flex;
+            justify-content: space-between
+        }
+
+        .sw {
+            width: 110px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: end;
+            padding: 6px;
+            font-size: 11px;
+            color: #fff;
+            font-weight: 600
+        }
+
+        .col {
+            background: var(--lc);
+            border-radius: 20px;
+            padding: 14px;
+            border: 3px solid var(--beige);
+            height: 470px
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+
+        /* modern skin */
+        html,
+        body {
+            background: radial-gradient(circle at 30% 10%, #4a2a1c, #1a0d08 70%)
+        }
+
+        #stage {
+            background: linear-gradient(155deg, #FFFBF6 0%, #F7EBDD 55%, #EBD6BF 100%);
+            border-radius: 32px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .5)
+        }
+
+        .top {
+            background: transparent;
+            color: var(--esp);
+            height: 92px;
+            padding: 0 52px
+        }
+
+        .top h1 {
+            font-size: 30px;
+            font-weight: 600;
+            letter-spacing: -.3px
+        }
+
+        .top .r>div:last-child {
+            background: var(--esp);
+            color: var(--cream);
+            padding: 6px 18px;
+            border-radius: 24px;
+            font-size: 20px
+        }
+
+        .cs {
+            background: rgba(255, 255, 255, .7);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(107, 62, 38, .12)
+        }
+
+        .cs.w b {
+            border-color: var(--cof)
+        }
+
+        .main {
+            height: 572px;
+            padding: 14px 56px
+        }
+
+        .bot {
+            background: rgba(255, 255, 255, .55);
+            backdrop-filter: blur(10px);
+            color: var(--cof);
+            font-weight: 500;
+            border-top: 1px solid rgba(107, 62, 38, .1);
+            height: 56px
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #E3AA6B, #C98B4A);
+            color: var(--esp);
+            border: 0;
+            box-shadow: 0 8px 20px rgba(168, 102, 53, .35);
+            height: 64px;
+            font-size: 20px;
+            letter-spacing: .2px
+        }
+
+        .btn.sec {
+            background: rgba(255, 255, 255, .8);
+            border: 1.5px solid rgba(107, 62, 38, .2);
+            box-shadow: 0 4px 14px rgba(58, 31, 20, .08)
+        }
+
+        .btn.hold {
+            background: linear-gradient(135deg, #4A281A, #2d150c);
+            color: var(--cream);
+            box-shadow: 0 8px 22px rgba(58, 31, 20, .4)
+        }
+
+        .card {
+            background: rgba(255, 255, 255, .78);
+            border: 1.5px solid rgba(107, 62, 38, .1);
+            border-radius: 30px;
+            box-shadow: 0 12px 32px rgba(58, 31, 20, .08)
+        }
+
+        .card.sel {
+            border-color: var(--gold)
+        }
+
+        .img {
+            background: radial-gradient(circle at 30% 25%, #fff, #F1DEC8 70%);
+            box-shadow: inset 0 -6px 14px rgba(168, 102, 53, .15), 0 8px 20px rgba(58, 31, 20, .1)
+        }
+
+        .item,
+        .col {
+            background: rgba(255, 255, 255, .78);
+            border: 1.5px solid rgba(107, 62, 38, .1);
+            border-radius: 26px;
+            box-shadow: 0 8px 24px rgba(58, 31, 20, .07)
+        }
+
+        .opt {
+            border: 1.5px solid rgba(107, 62, 38, .18);
+            background: rgba(255, 255, 255, .85);
+            border-radius: 16px;
+            padding: 9px 18px
+        }
+
+        .opt.on {
+            background: linear-gradient(135deg, #4A281A, #3A1F14);
+            border-color: transparent;
+            box-shadow: 0 6px 14px rgba(58, 31, 20, .3)
+        }
+
+        .qb {
+            background: linear-gradient(135deg, #4A281A, #3A1F14)
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-weight: 500
+        }
+
+        .mbox {
+            border: 0;
+            border-radius: 36px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+            background: #fffaf4
+        }
+
+        .modal {
+            backdrop-filter: blur(8px);
+            background: rgba(40, 20, 12, .6)
+        }
+
+        .hov {
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 4px rgba(201, 139, 74, .35), 0 16px 34px rgba(58, 31, 20, .22)
+        }
+
+        .lab {
+            letter-spacing: .8px;
+            font-size: 13px
+        }
+
+        h2 {
+            letter-spacing: -.3px
+        }
+
+        /* Python computer-vision bridge */
+        #backend-pill {
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 1000;
+            background: rgba(58, 31, 20, .92);
+            color: #F7EBDD;
+            border: 1px solid #C98B4A;
+            border-radius: 999px;
+            padding: 7px 13px;
+            font: 600 11px Poppins, system-ui, sans-serif;
+            letter-spacing: .3px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+            transition: .2s
+        }
+
+        #backend-pill.ok {
+            border-color: #2E9B57
+        }
+
+        #backend-pill.err {
+            border-color: #C94B45
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="fit">
+            <div id="stage"></div>
+        </div>
+        <div id="dev"></div>
+    </div>
+    <div id="backend-pill" class="err">● CONNECTING TO PYTHON</div>
+    <div id="cur">
+        <div class="o"></div>
+        <div class="d"></div><svg viewBox="0 0 70 70">
+            <circle cx="35" cy="35" r="31" fill="none" stroke="#2E9B57" stroke-width="6" stroke-dasharray="195"
+                stroke-dashoffset="195" id="ring" />
+        </svg>
+        <div class="t" id="pct">0%</div>
+    </div>
+    <script>
+        const $ = q => document.querySelector(q);
+        // ---------- editable data ----------
+        const P = [
+            { id: 'ame', n: 'Americano', p: 2, c: 'coffee', d: 'Bold espresso with hot water', e: '☕', ok: 1 },
+            { id: 'lat', n: 'Latte', p: 2.5, c: 'coffee', d: 'Smooth espresso with creamy milk', e: '🥛', ok: 1 },
+            { id: 'cap', n: 'Cappuccino', p: 2.75, c: 'coffee', d: 'Espresso with velvety milk foam', e: '☁️', ok: 1 },
+            { id: 'moc', n: 'Mocha', p: 3, c: 'coffee', d: 'Espresso, chocolate and steamed milk', e: '🍫', ok: 1 },
+            { id: 'mat', n: 'Matcha Latte', p: 3, c: 'non', d: 'Ceremonial matcha with milk', e: '🍃', ok: 1 },
+            { id: 'ice', n: 'Iced Tea', p: 2, c: 'tea', d: 'Fresh brewed black tea over ice', e: '🧊', ok: 1 },
+            { id: 'jas', n: 'Jasmine Tea', p: 1.8, c: 'tea', d: 'Floral green tea', e: '🌼', ok: 0 }];
+        const CATS = [{ id: 'coffee', n: 'COFFEE', e: '☕', l: ['ame', 'lat', 'cap', 'moc'] }, { id: 'tea', n: 'TEA', e: '🍵', l: ['ice', 'jas'] }, { id: 'cold', n: 'COLD DRINKS', e: '🧊', l: ['ice', 'mat'] }, { id: 'non', n: 'NON-COFFEE', e: '🍃', l: ['mat'] }];
+        const SZ = ['Small', 'Medium', 'Large'], TP = ['HOT', 'ICED'], SU = ['0%', 'LOW', 'NORMAL', 'EXTRA'], MK = [['REGULAR', 0], ['OAT', .3], ['ALMOND', .3]], AD = [['Whipped Cream', .5], ['Extra Shot', .5], ['Caramel', .5]];
+        const HOLD_MS = 1000, IDLE_MS = 45000, CNT = 10;
+        const pr = id => P.find(x => x.id == id), $$ = n => '$' + n.toFixed(2);
+        const unit = (c, p) => p.p + MK[c.milk][1] + c.add.reduce((a, i) => a + AD[i][1], 0);
+        const desc = (c) => [SZ[c.size], c.temp ? 'Iced' : 'Hot', SU[c.sugar] + ' Sugar', MK[c.milk][0] + ' Milk', ...c.add.map(i => AD[i][0])].join(' • ');
+        const tot = () => S.cart.reduce((a, i) => a + unit(i, pr(i.pid)) * i.qty, 0);
+        const cnt = () => S.cart.reduce((a, i) => a + i.qty, 0);
+        // ---------- state ----------
+        let S, orderNo = 102, cam = 'ok', modal = null, camOn = false, kq = [{ id: '#A101', s: 0, i: 'Cappuccino × 1', t: 2.75 }];
+        const newCfg = () => ({ size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 });
+        function reset() { S = { scr: 'welcome', cart: [], cat: 'coffee', pid: 'lat', cfg: newCfg(), edit: null, locked: false, order: null }; modal = null }
+        reset();
+        // ---------- components ----------
+        const csHTML = () => ({ ok: ['', 'CAMERA READY'], h: ['h', 'HAND DETECTED'], w: ['w', 'WAITING FOR HAND'], e: ['e', 'CAMERA ERROR'] }[cam]).map((v, i) => i ? v : '').join('') && (() => { const m = { ok: ['', 'CAMERA READY'], h: ['h', 'HAND DETECTED'], w: ['w', 'WAITING FOR HAND'], e: ['e', 'CAMERA ERROR'] }[cam]; return `<div class="cs ${m[0]}" id="cs"><b></b>${m[1]}</div>` })();
+        const B = (l, a, o = {}) => `<button class="btn ${o.c || ''}" data-a="${a}" ${o.v != null ? `data-v="${o.v}"` : ''} data-h="${o.h || 'PINCH TO SELECT'}" ${o.hold ? 'data-hold=1' : ''} ${o.dis ? 'disabled' : ''}>${o.hold ? '<i></i>' : ''}<span>${l}</span></button>`;
+        const TB = (t, back) => `<div class="top"><div class="l">${back ? B('← BACK', 'back', { c: 'sec sm', h: 'FIST = BACK' }) : ''}</div><h1>${t}</h1><div class="r">${csHTML()}<div style="font-size:26px;font-weight:600">🛒 ${cnt()}</div></div></div>`;
+        const bot = t => `<div class="bot">✋ ${t}</div>`;
+        const shell = (t, back, main, hint) => TB(t, back) + `<div class="main">${main}</div>` + bot(hint);
+        const optG = (lab, k, arr, multi) => `<div class="lab">${lab}</div><div>${arr.map((x, i) => { const nm = Array.isArray(x) ? x[0] : x; const on = multi ? S.cfg.add.includes(i) : S.cfg[k] == i; return `<button class="opt ${on ? 'on' : ''}" data-a="${multi ? 'add' : 'opt'}" data-k="${k}" data-v="${i}" data-h="PINCH">${multi ? (on ? '☑ ' : '☐ ') : ''}${nm}${multi ? ` +$${x[1].toFixed(2)}` : ''}</button>` }).join('')}</div>`;
+        const lines = () => S.cart.map(i => `<div class="ln"></div>`).join('');
+        const sumList = big => S.cart.map(i => { const p = pr(i.pid); return `<div class="item" style="margin-bottom:8px;padding:10px 22px"><div style="flex:1"><div style="font-size:22px;font-weight:700">${p.n.toUpperCase()} × ${i.qty}</div><div class="sub" style="font-size:16px">${desc(i)}</div></div><div class="price">${$$(unit(i, p) * i.qty)}</div></div>` }).join('');
+        // ---------- screens ----------
+        const V = {
+            welcome: () => TB('SMART COFFEE', 0) + `<div class="main" style="display:flex;align-items:center;gap:40px">
+<div style="flex:1;text-align:center;position:relative"><div class="img" style="width:300px;height:300px;font-size:150px;box-shadow:0 20px 50px rgba(58,31,20,.25)">☕</div><div style="font-size:70px;position:absolute;right:70px;bottom:-10px;opacity:.55;animation:wave 2s infinite">☝️</div></div>
+<div style="flex:1"><div style="font-size:48px;font-weight:700;line-height:1.1">☕ SMART<br>COFFEE<br>ORDERING</div><p class="sub" style="margin:14px 0 26px;font-size:22px">Touchless Ordering with Hand Gestures</p>
+<div class="row">${B('START ORDER', 'go', { v: 'help', h: 'PINCH TO SELECT' })}${B('HOW TO ORDER', 'go', { v: 'help', c: 'sec' })}</div>
+<div class="row" style="margin-top:22px"><span class="badge">English ▼</span><span class="badge">ខ្មែរ</span><span style="font-size:14px;color:var(--cof)">Camera is used locally for hand gesture control.</span></div></div></div>
+<style>@keyframes wave{50%{transform:rotate(18deg)}}</style>`+ bot('Point with one index finger to move; hold to select'),
+            help: () => {
+                const G = [['☝️', 'Point', 'MOVE', 'Point with one index finger to move the cursor.'], ['☝️', 'Hold', 'SELECT', 'Keep the cursor over a target until it completes.'], ['✌️', 'Two fingers', 'SCROLL', 'Move two fingers to scroll.'], ['🤏', 'Pinch', 'GRAB', 'Pinch a drink and drop it in the cart.'], ['✊', 'Fist', 'BACK', 'Hold a fist to return.']];
+                return TB('HOW TO ORDER', 1) + `<div class="main" style="padding-top:12px"><p class="sub" style="text-align:center;margin-bottom:10px">Use these hand gestures to navigate</p><div class="grid g4" style="gap:14px">${G.map(g => `<div class="card" style="padding:12px"><div style="font-size:40px">${g[0]}</div><div style="font-weight:700;font-size:19px">${g[1]}</div><span class="badge b-w">${g[2]}</span><div style="font-size:14px;margin-top:6px;color:var(--cof)">${g[3]}</div></div>`).join('')}</div><div style="text-align:center;margin-top:18px">${B('GOT IT', 'go', { v: 'cats' })}</div></div>` + bot('Point to move · hold to select · two fingers to scroll · pinch to grab · fist to go back')
+            },
+            cats: () => shell('WHAT WOULD YOU LIKE?', 1, `<div class="grid g2" style="padding:0 150px">${CATS.map(c => `<div class="card tgt" data-a="cat" data-v="${c.id}" data-h="PINCH TO SELECT" style="padding:22px 14px"><div style="display:flex;align-items:center;gap:20px;justify-content:center"><div class="img" style="margin:0;width:110px;height:110px;font-size:56px">${c.e}</div><div style="text-align:left"><div style="font-size:28px;font-weight:700">${c.n}</div><div class="sub">${c.l.length} product${c.l.length > 1 ? 's' : ''}</div></div></div></div>`).join('')}</div>`, 'Swipe ← → to browse • Pinch to select'),
+            prods: () => { const c = CATS.find(x => x.id == S.cat); return shell(c.n, 1, `<p class="sub" style="text-align:center;margin-bottom:16px">Choose your favorite</p><div class="grid" style="grid-template-columns:repeat(${Math.min(c.l.length, 4)},250px);justify-content:center">${c.l.map(id => { const p = pr(id); return `<div class="card tgt ${p.ok ? '' : 'off'}" data-a="prod" data-v="${id}" data-h="${p.ok ? 'PINCH TO SELECT' : 'UNAVAILABLE'}" style="padding-bottom:24px"><div class="img">${p.e}</div><div style="font-size:24px;font-weight:700">${p.n.toUpperCase()}</div><div style="font-size:15px;min-height:44px;color:var(--cof)">${p.d}</div><div class="price">${$$(p.p)}</div><span class="badge ${p.ok ? 'b-ok' : 'b-off'}">${p.ok ? '✓ AVAILABLE' : '✕ UNAVAILABLE'}</span></div>` }).join('')}</div>`, 'Swipe ← → to browse • Pinch to select • Fist = back') },
+            detail: () => {
+                const p = pr(S.pid), c = S.cfg, u = unit(c, p), ao = u - p.p; return shell(p.n.toUpperCase(), 1, `<div style="display:flex;gap:36px"><div style="width:300px;text-align:center"><div class="img" style="width:260px;height:260px;font-size:130px;box-shadow:0 16px 40px rgba(58,31,20,.2)">${p.e}</div><div class="price" style="font-size:34px;margin-top:10px">${$$(p.p)}</div><p class="sub">${p.d}.</p></div>
+<div style="flex:1">${optG('SIZE', 'size', ['S', 'M', 'L'])}${optG('TEMPERATURE', 'temp', TP)}${optG('SUGAR', 'sugar', SU)}${optG('MILK', 'milk', MK)}${optG('ADD-ONS', 'add', AD, 1)}
+<div class="row" style="margin-top:6px;justify-content:space-between"><div class="qty"><span class="qb tgt" data-a="q" data-v="-1" data-h="SWIPE ↓">−</span><b id="q">${c.qty}</b><span class="qb tgt" data-a="q" data-v="1" data-h="SWIPE ↑">+</span></div>
+<div style="font-size:15px;text-align:right">BASE ${$$(p.p)} • EXTRAS +${$$(ao - 0).slice(1)} • × ${c.qty}<div class="price" style="font-size:30px">TOTAL ${$$(u * c.qty)}</div></div></div>
+<div class="row" style="margin-top:10px">${B(S.edit != null ? 'UPDATE CART' : 'ADD TO CART', 'add2', {})}${B('BACK', 'back', { c: 'sec' })}</div></div></div>`, 'Pinch to select • Swipe ↑ ↓ to adjust quantity')
+            },
+            cart: () => !S.cart.length ? shell('YOUR CART', 1, `<div class="center"><div style="font-size:90px">🛒</div><h2>YOUR CART IS EMPTY</h2><p class="sub">Add a coffee to get started.</p>${B('BROWSE MENU', 'go', { v: 'cats' })}</div>`, 'Swipe to browse • Pinch to select') :
+                shell('YOUR CART', 1, `<div style="display:flex;gap:26px"><div style="flex:1.5;max-height:520px;overflow:hidden">${S.cart.map((i, k) => { const p = pr(i.pid); return `<div class="item"><div class="img" style="width:70px;height:70px;font-size:36px;margin:0">${p.e}</div><div style="flex:1"><div style="font-size:22px;font-weight:700">${p.n.toUpperCase()}</div><div style="font-size:14px;color:var(--cof)">${desc(i)}</div></div><div class="qty"><span class="qb tgt" data-a="cq" data-k="${k}" data-v="-1">−</span><b>${i.qty}</b><span class="qb tgt" data-a="cq" data-k="${k}" data-v="1">+</span></div><div class="price" style="width:80px;text-align:right">${$$(unit(i, p) * i.qty)}</div><div style="display:grid;gap:4px"><button class="opt" style="margin:0;padding:4px 14px" data-a="edit" data-v="${k}">EDIT</button><button class="opt" style="margin:0;padding:4px 14px;color:var(--err);border-color:var(--err)" data-a="del" data-v="${k}">DELETE</button></div></div>` }).join('')}</div>
+<div class="card" style="flex:1;align-self:flex-start;text-align:left"><div class="lab">SUBTOTAL</div><div class="price" style="color:var(--esp)">${$$(tot())}</div><div class="lab">TOTAL</div><div class="price" style="font-size:40px">${$$(tot())}</div><div style="display:grid;gap:12px;margin-top:16px">${B('HOLD TO CONFIRM', 'revhold', { hold: 1, h: 'PINCH + HOLD' })}${B('CONTINUE ORDERING', 'go', { v: 'cats', c: 'sec sm' })}</div></div></div>`, 'Pinch + Hold to confirm • Normal pinch will not confirm'),
+            review: () => shell('REVIEW YOUR ORDER', 1, `<p class="sub" style="text-align:center;margin-bottom:10px">Please check your order before confirming.</p><div style="width:760px;margin:0 auto">${sumList()}<div class="row" style="justify-content:space-between;padding:6px 22px"><span style="font-size:18px">SUBTOTAL ${$$(tot())}</span><span class="price" style="font-size:34px">TOTAL ${$$(tot())}</span></div><div class="row" style="justify-content:center;margin-top:10px">${B(S.locked ? '✓ ORDER CONFIRMED' : 'HOLD TO CONFIRM ORDER', 'done', { hold: 1, dis: S.locked, h: 'PINCH + HOLD 1.0 SECOND' })}${B('EDIT ORDER', 'go', { v: 'cart', c: 'sec' })}</div></div>`, 'Pinch + Hold to confirm • Keep holding… 1.0 second'),
+            confirm: () => {
+                const o = S.order; return TB('ORDER CONFIRMED', 0) + `<div class="main" style="display:flex;gap:50px;align-items:center;justify-content:center"><div class="center" style="flex:none;width:420px"><div class="img" style="background:var(--ok);color:#fff;width:150px;height:150px;font-size:90px">✓</div><h2 style="font-size:36px;color:var(--ok)">ORDER CONFIRMED!</h2><p class="sub">Your order has been received.</p><div style="font-size:60px;font-weight:700">${o.id}</div><span class="badge b-ok" style="font-size:16px">✓ YOUR ORDER IS BEING PREPARED</span></div>
+<div class="card" style="width:460px;text-align:left"><div class="sub">${o.d} • ${o.t}</div><hr style="border:0;border-top:2px dashed var(--beige);margin:10px 0">${o.items.map(i => `<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>${pr(i.pid).n} × ${i.qty}</b><div style="font-size:14px;color:var(--cof)">${desc(i)}</div></div><b>${$$(unit(i, pr(i.pid)) * i.qty)}</b></div>`).join('')}<hr style="border:0;border-top:2px dashed var(--beige);margin:10px 0"><div class="row" style="justify-content:space-between"><b>TOTAL</b><span class="price" style="font-size:32px">${$$(o.total)}</span></div><div class="row" style="margin-top:14px">${B('VIEW ORDER TICKET', 'go', { v: 'ticket', c: 'sm' })}${B('NEW ORDER', 'new', { c: 'sec sm' })}</div></div></div>` + bot('Pinch to view ticket • Session resets automatically')
+            },
+            ticket: () => { const o = S.order; return TB('ORDER TICKET', 0) + `<div class="main" style="display:flex;gap:60px;align-items:center;justify-content:center"><div class="recpt"><div style="text-align:center;font-weight:700;font-size:20px">☕ SMART COFFEE<br>ORDER TICKET</div><div style="text-align:center;font-size:44px;font-weight:700;margin:6px 0">${o.id}</div><div style="text-align:center">${o.d} ${o.t}</div><hr>${o.items.map(i => `<div class="ln"><span>${pr(i.pid).n} ×${i.qty}</span><span>${$$(unit(i, pr(i.pid)) * i.qty)}</span></div><div style="font-size:12px;color:#666">${desc(i)}</div>`).join('')}<hr><div class="ln"><b>TOTAL</b><b>${$$(o.total)}</b></div><hr><div style="text-align:center">STATUS: PENDING<br>Sent to kitchen</div></div><div style="text-align:center">${B('FINISH', 'new', { h: 'PINCH TO FINISH' })}<p class="sub" style="margin-top:16px">Collect your drink when your number is called.</p></div></div>` + bot('Pinch to finish • Kiosk resets for the next customer') },
+            camerr: () => `<div class="center" style="background:var(--esp);color:var(--cream)"><div style="font-size:90px">📷⚠️</div><h2 style="font-size:40px">CAMERA UNAVAILABLE</h2><p style="font-size:20px">Please check your webcam connection.</p><div class="cs e" style="font-size:18px"><b></b>CAMERA ERROR</div><div class="row">${B('TRY AGAIN', 'retry')}${B('EXIT', 'new', { c: 'sec' })}</div></div>`,
+            hand: () => shell('SHOW YOUR HAND', 0, `<div class="center"><div style="border:5px dashed ${cam == 'h' ? 'var(--ok)' : 'var(--gold)'};border-radius:40px;width:420px;height:280px;display:flex;align-items:center;justify-content:center;font-size:150px;color:${cam == 'h' ? 'var(--ok)' : 'var(--car)'}">✋</div><p class="sub" style="font-size:22px">Place your hand inside the interaction area.</p>${B('RETRY', 'retry')}</div>`, 'Hold your hand steady inside the guide'),
+            gest: () => shell('GESTURE NOT RECOGNIZED', 0, `<div class="center"><div class="img" style="font-size:80px;background:#f8e6c4">❓</div><p class="sub" style="font-size:22px">Try again and keep your hand steady.</p>${B('TRY AGAIN', 'go', { v: 'cats' })}<p style="font-size:15px">See How to Order for gesture instructions.</p></div>`, 'Try the gesture again'),
+            kitchen: () => TB('KITCHEN QUEUE', 0) + `<div class="main"><div class="grid" style="grid-template-columns:repeat(3,1fr)">${['PENDING', 'PREPARING', 'READY'].map((n, ci) => `<div class="col"><div style="font-weight:700;font-size:20px;margin-bottom:10px">${n} <span class="badge">${kq.filter(o => o.s == ci).length}</span></div>${kq.filter(o => o.s == ci).map(o => `<div class="card" style="text-align:left;margin-bottom:10px"><b style="font-size:26px">${o.id}</b><div style="font-size:15px">${o.i}</div><div class="price" style="font-size:20px">${$$(o.t)}</div><button class="opt" data-a="kq" data-v="${o.id}">${['START', 'READY', 'COMPLETE'][ci]}</button></div>`).join('')}</div>`).join('')}</div></div>` + bot('Staff view • Pending → Preparing → Ready → Completed'),
+            design: () => `<div style="padding:24px 40px;height:720px;overflow:auto;cursor:auto" id="ds"><h2 style="font-size:34px">Design System</h2><div class="lab">COLORS</div><div class="row" style="flex-wrap:wrap;gap:8px">${[['Espresso', '#3A1F14'], ['Deep', '#4A281A'], ['Coffee', '#6B3E26'], ['Caramel', '#A86635'], ['Gold', '#C98B4A'], ['Cream', '#F7EBDD'], ['Light', '#FFF8F0'], ['Beige', '#EAD8C5'], ['Success', '#2E9B57'], ['Warning', '#D89A32'], ['Error', '#C94B45'], ['Info', '#4C87C7']].map(c => `<div class="sw" style="background:${c[1]};${c[1].match(/F|E/) && c[1] < '#C' ? 'color:#3A1F14' : ''}">${c[0]}<br>${c[1]}</div>`).join('')}</div>
+<div class="lab">TYPOGRAPHY — Poppins</div><div style="font-size:44px;font-weight:700">Kiosk title 44</div><div style="font-size:30px;font-weight:600">Screen title 30 • Product name 22 • Body 18</div>
+<div class="lab">BUTTONS (default / secondary / hold / disabled / hover)</div><div class="row">${B('PRIMARY', 'x')}${B('SECONDARY', 'x', { c: 'sec' })}${B('HOLD', 'x', { hold: 1 })}${B('DISABLED', 'x', { dis: 1 })}<button class="btn hov" data-h="PINCH TO SELECT">HOVER</button></div>
+<div class="lab">BADGES & STATUS</div><div class="row"><span class="badge b-ok">✓ AVAILABLE</span><span class="badge b-off">✕ UNAVAILABLE</span><span class="badge b-w">PENDING</span><span class="badge b-i">PREPARING</span><span class="badge b-ok">READY</span><span class="badge">COMPLETED</span><span class="badge" style="background:#f3d3d1;color:var(--err)">! CANCELLED</span></div>
+<div class="lab">CURSOR STATES — ○ normal • ◎ hover • ● pinch • ring = hold 0→100%</div><div class="row"><div class="sub">Move the mouse over any target (hover), click (pinch), press and hold on a HOLD button (confirm).</div></div>
+<div class="lab">CARDS • RADIUS 26 / 34 pill • SHADOW gold glow • MOTION 200–350 ms</div><div class="row"><div class="card" style="width:200px">Cream card</div><div class="card sel" style="width:200px">Selected</div><div class="card off" style="width:200px">Unavailable</div></div><div style="margin-top:14px">${B('← BACK TO KIOSK', 'go', { v: 'welcome', c: 'sm' })}</div></div>`
+        };
+        const HINTS = {};
+        // ---------- modals ----------
+        const M = {
+            unavail: () => `<div class="mbox"><div style="font-size:60px">🚫</div><h2>PRODUCT UNAVAILABLE</h2><p class="sub">This item is currently unavailable.</p><div class="row">${B('BACK TO MENU', 'mclose')}</div></div>`,
+            timeout: () => `<div class="mbox"><h2>ARE YOU STILL THERE?</h2><p class="sub">No activity detected.</p><div style="font-size:70px;font-weight:700;color:var(--car)" id="cd">${S.cd}</div><div class="row">${B('CONTINUE ORDER', 'mclose')}${B('RESET SESSION', 'new', { c: 'sec' })}</div></div>`,
+            cancel: () => `<div class="mbox"><h2>CANCEL ORDER?</h2><p class="sub">Your current order will be cleared.</p><div class="row">${B('CONTINUE ORDER', 'mclose')}${B('CANCEL ORDER', 'new', { c: 'sec' })}</div></div>`
+        };
+        // ---------- render ----------
+        const stage = $('#stage'); let hi = -1;
+        function render() { stage.innerHTML = V[S.scr]() + (modal ? `<div class="modal">${M[modal]()}</div>` : '') + `<div id="toast"></div><div id="cam"></div>`; hi = -1; cam2() }
+        function toast(a, b) { const t = $('#toast'); t.innerHTML = a + (b ? `<small>${b}</small>` : ''); t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1400) }
+        function go(s) { S.scr = s; modal = null; render(); idle() }
+        function cam2() { const c = $('#cam'); if (!c) return; c.style.display = camOn ? 'block' : 'none'; c.innerHTML = '<div style="padding:4px 8px;color:var(--gold);font-weight:700">● HAND DETECTED</div><svg viewBox="0 0 200 110" style="width:100%"><rect x="20" y="8" width="160" height="94" rx="12" fill="none" stroke="#C98B4A" stroke-dasharray="4"/>' + [[100, 90], [80, 70], [70, 50], [85, 30], [100, 25], [115, 32], [120, 55], [130, 70]].map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i == 4 ? 6 : 3.5}" fill="${i == 4 ? '#2E9B57' : '#fff'}"/>`).join('') + '</svg>' }
+        // ---------- actions ----------
+        function act(e) {
+            const a = e.a, v = e.v;
+            if (a == 'go') return go(v);
+            if (a == 'back') { const m = { help: 'welcome', cats: 'welcome', prods: 'cats', detail: S.edit != null ? 'cart' : 'prods', cart: 'cats', review: 'cart' }[S.scr]; if (['cats', 'cart'].includes(S.scr) && S.cart.length && m == 'welcome') { modal = 'cancel'; return render() } return go(m || 'welcome') }
+            if (a == 'cat') { S.cat = v; return go('prods') }
+            if (a == 'prod') { const p = pr(v); if (!p.ok) { modal = 'unavail'; return render() } S.pid = v; S.cfg = newCfg(); S.edit = null; return go('detail') }
+            if (a == 'opt') { S.cfg[e.k] = +v; return render() }
+            if (a == 'add') { const i = S.cfg.add.indexOf(+v); i < 0 ? S.cfg.add.push(+v) : S.cfg.add.splice(i, 1); return render() }
+            if (a == 'q') { const n = S.cfg.qty + +v; if (n < 1) return toast('! MINIMUM 1'); S.cfg.qty = n; render(); toast(v > 0 ? '↑ INCREASED' : '↓ DECREASED'); return }
+            if (a == 'add2') { const it = { pid: S.pid, ...S.cfg, add: [...S.cfg.add] }; sendBackend('cart_add', { item: it, editIndex: S.edit }); if (S.edit != null) { S.cart[S.edit] = it; S.edit = null } else S.cart.push(it); go('cart'); toast('✓ ADDED TO CART', 'Cart updated'); return }
+            if (a == 'cq') { const i = S.cart[e.k]; i.qty = Math.max(1, i.qty + +v); sendBackend('cart_update', { index: +e.k, delta: +v }); return render() }
+            if (a == 'del') { sendBackend('cart_remove', { index: +v }); S.cart.splice(+v, 1); return render() }
+            if (a == 'edit') { const i = S.cart[+v]; S.edit = +v; S.pid = i.pid; S.cfg = { ...i, add: [...i.add] }; return go('detail') }
+            if (a == 'revhold') return go('review');
+            if (a == 'done') { if (S.locked) return; S.locked = true; sendBackend('confirm_order', { items: S.cart }); toast('✓ CONFIRMING ORDER', 'Sending order to Python'); return render() }
+            if (a == 'new') { sendBackend('reset_session', {}); reset(); return go('welcome') }
+            if (a == 'mclose') { modal = null; return render() }
+            if (a == 'retry') { cam = 'ok'; return go('welcome') }
+            if (a == 'kq') { sendBackend('kitchen_update', { orderId: v }); const o = kq.find(x => x.id == v); if (o) { o.s++; if (o.s > 2) kq = kq.filter(x => x != o) } return render() }
+        }
+        // ---------- cursor, pinch, hold ----------
+        const cur = $('#cur'), ring = $('#ring'), pct = $('#pct'); let hold = null, camT;
+        const el = t => t && t.closest && t.closest('[data-a],[data-hold]');
+        document.addEventListener('mousemove', e => {
+            cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`; const t = el(document.elementFromPoint(e.clientX, e.clientY)); cur.classList.toggle('hv', !!t); document.querySelectorAll('.hov').forEach(x => x.classList.remove('hov')); if (t && !t.disabled) t.classList.add('hov');
+            if (cam != 'e' && modal == null && S.scr != 'design') { const c = $('#cs'); if (c) { c.className = 'cs h'; c.lastChild.textContent = 'HAND DETECTED'; clearTimeout(camT); camT = setTimeout(() => { if (cam == 'ok' && $('#cs')) { $('#cs').className = 'cs'; $('#cs').lastChild.textContent = 'CAMERA READY' } }, 1500) } } idle()
+        });
+        document.addEventListener('mousedown', e => { cur.classList.add('pn'); const t = el(e.target); if (t && t.dataset.hold && !t.disabled) { const bar = t.querySelector('i'), st = performance.now(); cur.classList.add('hd'); toast('PINCH DETECTED', 'KEEP HOLDING… 1.0 SECOND'); hold = { t, raf: 0 }; const f = () => { const p = Math.min(1, (performance.now() - st) / HOLD_MS); ring.style.strokeDashoffset = 195 * (1 - p); pct.textContent = p >= 1 ? '✓ Confirmed' : Math.round(p * 100) + '%'; if (bar) bar.style.width = p * 100 + '%'; if (p >= 1) { const d = t.dataset; hold = null; cur.classList.remove('hd'); act(d); return } hold.raf = requestAnimationFrame(f) }; f() } });
+        document.addEventListener('mouseup', () => { cur.classList.remove('pn'); if (hold) { cancelAnimationFrame(hold.raf); const b = hold.t.querySelector('i'); if (b) b.style.width = 0; hold = null; cur.classList.remove('hd'); toast('! TRY AGAIN', 'Keep holding until the ring completes') } });
+        document.addEventListener('click', e => { const t = el(e.target); if (!t || t.disabled) return; if (t.dataset.hold) { toast('HOLD TO CONFIRM', 'A normal pinch will not confirm'); return } toast('👌 SELECTED'); act(t.dataset) });
+        // ---------- keyboard gestures + demo ----------
+        const tgts = () => [...stage.querySelectorAll('.tgt,.main .btn:not([disabled])')];
+        function focus(i) { const t = tgts(); if (!t.length) return; hi = (i + t.length) % t.length; document.querySelectorAll('.hov').forEach(x => x.classList.remove('hov')); const x = t[hi]; x.classList.add('hov'); const r = x.getBoundingClientRect(); cur.style.transform = `translate(${r.left + r.width / 2}px,${r.top + r.height / 2}px)`; cur.classList.add('hv') }
+        const DEMO = { 1: 'welcome', 2: 'help', 3: 'cats', 4: 'prods', 5: 'detail', 6: 'cart', 7: 'review', 8: 'confirm', 9: 'ticket' };
+        function seed() { if (!S.cart.length) { S.cart = [{ pid: 'lat', size: 2, temp: 1, sugar: 1, milk: 1, add: [], qty: 2 }, { pid: 'ame', size: 1, temp: 0, sugar: 2, milk: 0, add: [], qty: 1 }] } if (!S.order) { S.order = { id: '#A102', items: S.cart, total: tot(), d: '28 Sep 2026', t: '10:24 AM' } } }
+        function jump(k) { if (k == 'welcome' || k == 'help' || k == 'cats' || k == 'prods' || k == 'detail') S.pid = 'lat'; if (['cart', 'review', 'confirm', 'ticket', 'kitchen'].includes(k)) seed(); if (k == 'empty') { S.cart = []; k = 'cart' } if (k == 'camerr') { cam = 'e' } else if (k == 'hand') { cam = 'w' } else if (cam != 'ok') cam = 'ok'; S.locked = false; modal = null; go(k) }
+        document.addEventListener('keydown', e => {
+            const k = e.key; idle();
+            if (k == 'ArrowRight') { focus(hi + 1); toast('→ NEXT') } else if (k == 'ArrowLeft') { focus(hi - 1); toast('← PREVIOUS') }
+            else if (k == 'ArrowUp' && S.scr == 'detail') act({ a: 'q', v: 1 }); else if (k == 'ArrowDown' && S.scr == 'detail') act({ a: 'q', v: -1 });
+            else if (k == 'Enter' || k == ' ') { e.preventDefault(); const t = tgts()[hi]; if (t) { if (t.dataset.hold) toast('HOLD TO CONFIRM', 'Use the mouse: press and hold'); else { toast('👌 SELECTED'); act(t.dataset) } } }
+            else if (k == 'f' || k == 'F') { toast('✊ FIST', 'Back'); act({ a: 'back' }) }
+            else if (k == 'p' && S.scr == 'welcome') { toast('✋ OPEN PALM DETECTED', 'Start interaction'); setTimeout(() => go('help'), 500) }
+            else if (DEMO[k]) jump(DEMO[k]); else if (k == 'r' || k == 'R') { reset(); cam = 'ok'; go('welcome') }
+            else if (k == 'Escape') { reset(); go('camerr'); cam = 'e'; render() }
+        });
+        // ---------- timeout ----------
+        let it, ct; function idle() { clearTimeout(it); if (modal == 'timeout') return; if (S.scr == 'welcome' || S.scr == 'design') return; it = setTimeout(() => { if (['camerr', 'confirm', 'ticket', 'kitchen'].includes(S.scr)) return; S.cd = CNT; modal = 'timeout'; render(); ct = setInterval(() => { if (modal != 'timeout') { clearInterval(ct); return } S.cd--; const c = $('#cd'); if (c) c.textContent = S.cd; if (S.cd <= 0) { clearInterval(ct); reset(); go('welcome') } }, 1000) }, IDLE_MS) }
+        // ---------- dev bar & fit ----------
+        const D = [['Welcome', 'welcome'], ['Help', 'help'], ['Categories', 'cats'], ['Products', 'prods'], ['Detail', 'detail'], ['Cart', 'cart'], ['Empty cart', 'empty'], ['Review', 'review'], ['Confirmed', 'confirm'], ['Ticket', 'ticket'], ['Camera error', 'camerr'], ['No hand', 'hand'], ['Not recognized', 'gest'], ['Kitchen', 'kitchen'], ['Design system', 'design']];
+        $('#dev').innerHTML = D.map(d => `<button data-j="${d[1]}">${d[0]}</button>`).join('') + '<button data-m="unavail">Unavailable</button><button data-m="timeout">Timeout</button><button data-m="cancel">Cancel</button><button id="cb">Camera preview</button><span style="font-size:11px;color:#b99;width:100%;text-align:center">Demo mode • mouse = index finger (click = pinch, press &amp; hold = pinch + hold) • ← → swipe, Enter pinch, ↑ ↓ qty, F fist, P palm, 1–9 screens, R reset</span>';
+        $('#dev').onclick = e => { const b = e.target; if (b.dataset.j) jump(b.dataset.j); if (b.dataset.m) { if (!S.cart.length) seed(); if (b.dataset.m == 'timeout') { S.cd = CNT } modal = b.dataset.m; render(); if (modal == 'timeout') { clearInterval(ct); ct = setInterval(() => { S.cd--; const c = $('#cd'); if (c) c.textContent = S.cd; if (S.cd <= 0) { clearInterval(ct); reset(); go('welcome') } }, 1000) } } if (b.id == 'cb') { camOn = !camOn; cam2() } };
+        function fit() { const s = Math.min(innerWidth / 1280, (innerHeight - 70) / 720); stage.style.transform = `scale(${s})`; $('#fit').style.width = 1280 * s + 'px'; $('#fit').style.height = 720 * s + 'px' }
+        addEventListener('resize', fit); fit(); render();
+
+        // ============================================================
+        // PYTHON COMPUTER-VISION BRIDGE
+        // ============================================================
+        let backendSocket = null;
+        let backendConnected = false;
+        let backendPinchActive = false;
+        let backendPinchTarget = null;
+        let backendLastGesture = 'NONE';
+
+        function backendStatus(text, cls = 'err') {
+            const p = document.getElementById('backend-pill');
+            if (!p) return;
+            p.textContent = '● ' + text;
+            p.className = cls;
+        }
+
+        function sendBackend(type, payload = {}) {
+            if (!backendSocket || backendSocket.readyState !== WebSocket.OPEN) return false;
+            backendSocket.send(JSON.stringify({ type, ...payload }));
+            return true;
+        }
+
+        function backendCursor(x, y) {
+            const stage = document.getElementById('stage');
+            if (!stage) return;
+            const r = stage.getBoundingClientRect();
+            const sx = r.width / 1280;
+            const sy = r.height / 720;
+            const px = r.left + Math.max(0, Math.min(1280, x)) * sx;
+            const py = r.top + Math.max(0, Math.min(720, y)) * sy;
+            cur.style.transform = `translate(${px}px,${py}px)`;
+
+            const target = el(document.elementFromPoint(px, py));
+            document.querySelectorAll('.hov').forEach(x => x.classList.remove('hov'));
+            cur.classList.toggle('hv', !!target && !target.disabled);
+            if (target && !target.disabled) target.classList.add('hov');
+            return target;
+        }
+
+        function backendTarget() {
+            const r = document.getElementById('stage')?.getBoundingClientRect();
+            if (!r) return null;
+            const cx = parseFloat(cur.style.transform.match(/translate\(([-\d.]+)/)?.[1] || '0');
+            const cy = parseFloat(cur.style.transform.match(/,\s*([-\d.]+)/)?.[1] || '0');
+            return el(document.elementFromPoint(cx, cy));
+        }
+
+        function virtualPinchStart(target) {
+            if (!target || target.disabled) return;
+            cur.classList.add('pn');
+            if (target.dataset.hold) {
+                // Reuse the existing hold implementation by dispatching a mousedown.
+                backendPinchTarget = target;
+                target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 0, clientY: 0 }));
+            }
+        }
+
+        function virtualPinchEnd(target) {
+            cur.classList.remove('pn');
+            if (target && target.dataset.hold) {
+                target.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: 0, clientY: 0 }));
+                backendPinchTarget = null;
+                return;
+            }
+            if (target && !target.disabled) {
+                target.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 0, clientY: 0 }));
+            }
+        }
+
+        function handleBackendGesture(g) {
+            if (g === 'NONE') {
+                if (backendPinchActive) {
+                    virtualPinchEnd(backendPinchTarget);
+                    backendPinchActive = false;
+                    backendPinchTarget = null;
+                }
+                backendLastGesture = 'NONE';
+                return;
+            }
+
+            if (g === 'PINCH') {
+                const target = backendPinchTarget || backendTarget();
+                if (!backendPinchActive) {
+                    backendPinchActive = true;
+                    backendPinchTarget = target;
+                    virtualPinchStart(target);
+                }
+                backendLastGesture = g;
+                return;
+            }
+
+            // Gestures are edge-triggered.
+            if (g === backendLastGesture) return;
+            backendLastGesture = g;
+
+            if (g === 'FIST') {
+                if (modal) return;
+                act({ a: 'back' });
+                return;
+            }
+
+            if (g === 'SWIPE_LEFT' || g === 'SWIPE_RIGHT') {
+                // Use the same target navigation behavior as the reference UI.
+                const delta = g === 'SWIPE_RIGHT' ? 1 : -1;
+                if (S.scr === 'cats' || S.scr === 'prods') {
+                    focus(hi + delta);
+                    toast(delta > 0 ? '→ NEXT' : '← PREVIOUS');
+                } else {
+                    focus(hi + delta);
+                    toast(delta > 0 ? '→ NEXT' : '← PREVIOUS');
+                }
+                return;
+            }
+
+            if (g === 'SWIPE_UP' || g === 'SWIPE_DOWN') {
+                if (S.scr === 'detail') {
+                    act({ a: 'q', v: g === 'SWIPE_UP' ? 1 : -1 });
+                } else {
+                    focus(hi + (g === 'SWIPE_UP' ? -1 : 1));
+                }
+            }
+        }
+
+        function connectBackend() {
+            const url = `ws://${location.hostname || 'localhost'}:8765`;
+            backendStatus('CONNECTING TO PYTHON', 'err');
+            try {
+                backendSocket = new WebSocket(url);
+            } catch (e) {
+                backendStatus('PYTHON DISCONNECTED', 'err');
+                return;
+            }
+
+            backendSocket.onopen = () => {
+                backendConnected = true;
+                backendStatus('PYTHON CONNECTED', 'ok');
+                sendBackend('hello', {});
+            };
+
+            backendSocket.onclose = () => {
+                backendConnected = false;
+                backendStatus('PYTHON DISCONNECTED', 'err');
+                setTimeout(connectBackend, 1500);
+            };
+
+            backendSocket.onerror = () => {
+                backendConnected = false;
+                backendStatus('PYTHON CONNECTION ERROR', 'err');
+            };
+
+            backendSocket.onmessage = (event) => {
+                let m;
+                try { m = JSON.parse(event.data); } catch { return; }
+
+                if (m.type === 'state') {
+                    cam = m.camera || cam;
+                    if (m.handDetected) {
+                        const c = $('#cs');
+                        if (c) { c.className = 'cs h'; c.lastChild.textContent = 'HAND DETECTED'; }
+                    } else if (cam !== 'e') {
+                        const c = $('#cs');
+                        if (c) { c.className = 'cs w'; c.lastChild.textContent = 'WAITING FOR HAND'; }
+                    }
+                    if (m.cursor) backendCursor(m.cursor.x, m.cursor.y);
+                    if (m.gesture) handleBackendGesture(m.gesture);
+                    if (m.cart) {
+                        S.cart = m.cart.map(i => ({ ...i }));
+                        if (S.scr === 'cart' || S.scr === 'review') render();
+                    }
+                }
+
+                if (m.type === 'cart_sync') {
+                    S.cart = (m.cart || []).map(i => ({ ...i }));
+                    if (S.scr === 'cart' || S.scr === 'review') render();
+                }
+
+                if (m.type === 'order_created') {
+                    S.order = m.order;
+                    S.locked = true;
+                    kq.push({ id: m.order.order_id, s: 0, i: m.order.items.map(i => i.product.name + ' × ' + i.quantity).join(', '), t: m.order.total });
+                    toast('✓ ORDER CONFIRMED', 'Order ' + m.order.order_id);
+                    setTimeout(() => go('confirm'), 450);
+                }
+
+                if (m.type === 'error') {
+                    S.locked = false;
+                    toast('! ' + (m.message || 'Python error'));
+                }
+            };
+        }
+
+        connectBackend();
+    </script>
+</body>
+
+</html>
